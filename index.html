@@ -3,27 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JUNIOR PRIVAT HUB | Education Portal</title>
+    <title>JUNIOR PRIVAT HUB | Secure Chat</title>
     <style>
-        :root { --gold: #D4AF37; --white: #ffffff; --green: #2ecc71; --bg: #0a0a0a; --red: #c0392b; }
+        :root { --gold: #D4AF37; --white: #ffffff; --green: #2ecc71; --bg: #0a0a0a; --red: #e74c3c; }
         body { background: var(--bg); color: var(--white); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; text-align: center; }
-        .hub-container { max-width: 450px; margin: 10px auto; border: 2px solid var(--gold); padding: 20px; border-radius: 20px; background: rgba(212, 175, 55, 0.01); }
+        .hub-container { max-width: 450px; margin: 5px auto; border: 2px solid var(--gold); padding: 15px; border-radius: 20px; box-shadow: 0 0 15px rgba(212, 175, 55, 0.2); }
         
-        /* Welcome Box */
-        .welcome-box { background: #111; border: 1px solid #333; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: left; border-left: 5px solid var(--green); }
-        .welcome-box h2 { color: var(--green); font-size: 1rem; margin-top: 0; }
-        .welcome-box p { font-size: 0.75rem; line-height: 1.4; color: #bbb; margin-bottom: 5px; }
+        .welcome-box { background: #111; border: 1px solid #333; padding: 12px; border-radius: 12px; margin-bottom: 15px; text-align: left; border-left: 5px solid var(--green); font-size: 0.75rem; }
+        .warning-box { background: rgba(231, 76, 60, 0.1); border: 1px solid var(--red); padding: 8px; border-radius: 10px; font-size: 0.65rem; color: #ff9999; margin-bottom: 15px; }
 
-        /* Security Warning */
-        .warning-box { background: rgba(192, 57, 43, 0.1); border: 1px solid var(--red); padding: 10px; border-radius: 10px; font-size: 0.7rem; color: #ff9999; margin-bottom: 20px; text-align: left; }
-
-        h1 { color: var(--gold); font-size: 1.5rem; margin-bottom: 5px; text-transform: uppercase; }
+        .room-card { background: #151515; padding: 12px; border-radius: 12px; border: 1px solid #333; margin-bottom: 10px; text-align: left; }
+        .matrix-code { color: var(--gold); font-family: monospace; font-size: 1.1rem; font-weight: bold; }
+        
+        /* Chat Room Styling */
+        #chatRoom { display: none; background: #000; border: 1px solid var(--gold); border-radius: 15px; padding: 15px; margin-top: 10px; animation: fadeIn 0.5s; }
+        .msg-box { background: #111; border: 1px solid #444; height: 180px; overflow-y: auto; margin-bottom: 10px; padding: 12px; text-align: left; font-size: 0.9rem; border-radius: 10px; line-height: 1.5; }
+        
+        .emoji-bar { display: flex; gap: 10px; margin-bottom: 8px; justify-content: center; font-size: 1.2rem; cursor: pointer; }
         .nav-btn { flex: 1; padding: 12px 5px; border-radius: 10px; border: 1px solid var(--gold); cursor: pointer; font-size: 0.75rem; background: #111; color: #fff; font-weight: bold; }
-        .nav-btn:hover { background: var(--gold); color: #000; }
-        .room-card { background: #1a1a1a; padding: 12px; border-radius: 10px; border: 1px solid #333; margin-bottom: 10px; text-align: left; }
-        .matrix-code { color: var(--gold); font-family: monospace; font-size: 1.2rem; font-weight: bold; }
-        .action-btn { width: 100%; background: var(--gold); color: #000; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .invite-btn { background: var(--white); color: #000; padding: 6px 12px; border-radius: 6px; font-size: 0.7rem; border: none; cursor: pointer; margin-top: 8px; font-weight: bold; }
+        .action-btn { width: 100%; background: var(--gold); color: #000; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
+        
+        input, textarea { width: 90%; padding: 12px; border-radius: 8px; border: 1px solid var(--gold); background: #000; color: #fff; font-size: 1rem; margin-bottom: 10px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -31,51 +32,73 @@
 <div class="hub-container">
     <h1>JUNIOR PRIVAT HUB 🛡️</h1>
     
-    <div class="welcome-box">
-        <h2>Habari! Karibu Kwenye Mfumo</h2>
-        <p>Huu ni mfumo maalum kwa ajili ya <strong>Education & Development Papers</strong>. Tunakuhakikishia usalama wa hali ya juu kwa mawasiliano yako ya siri.</p>
-        <p><strong>Faragha:</strong> Hatuhitaji wala hatuhifadhi taarifa zozote za wateja. Kila kitu kinabaki kwenye kifaa chako.</p>
-    </div>
-
-    <div class="warning-box">
-        ⚠️ <strong>Onyo la Kitalaamu:</strong> Mfumo hautahusika na changamoto za kutapeliwa. Kila mtumiaji anawajibika mwalika mtu anayemhitaji pekee. Usitoe kodi yako kwa mtu asiye sahihi.
-    </div>
-
-    <div style="display: flex; gap: 8px; margin-bottom: 20px;">
-        <div class="nav-btn" onclick="createNewRoom()">👤 FIRST USER</div>
-        <div class="nav-btn" onclick="alert('Ingiza kodi uliyopewa na mwenzako hapa chini.')">👥 SECONDS</div>
-    </div>
-
-    <div id="roomList">
+    <div id="mainInterface">
+        <div class="welcome-box">
+            <strong>Habari! Karibu Kwenye Mfumo</strong><br>
+            Huu ni mfumo kwa ajili ya Education & Development. Tunaruhusu uhuru wa Emoji na hisia katika mawasiliano yako.
         </div>
 
-    <div style="margin-top: 20px;">
-        <input type="text" id="roomInput" placeholder="Enter T-Junior/XXXXXX" style="width: 85%; padding: 12px; border-radius: 8px; border: 1px solid var(--gold); background: #000; color: #fff; text-align: center;">
-        <button class="action-btn" onclick="enterRoom()">ACCESS SECURE ROOM</button>
+        <div class="warning-box">
+            ⚠️ Usitoe kodi yako kwa mtu asiye sahihi. Mualike rafiki unayemwamini pekee.
+        </div>
+
+        <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+            <div class="nav-btn" onclick="createNewRoom()">👤 FIRST USER</div>
+            <div class="nav-btn" onclick="alert('Ingiza kodi uliyopewa hapa chini.')">👥 SECONDS</div>
+        </div>
+
+        <div id="roomList"></div>
+
+        <div style="margin-top: 15px;">
+            <input type="text" id="roomInput" placeholder="T-Junior/_____" oninput="autoPrefix(this)">
+            <button class="action-btn" onclick="enterRoom()">ACCESS SECURE ROOM</button>
+        </div>
     </div>
 
-    <p style="font-size: 0.65rem; color: #555; margin-top: 30px;">
+    <div id="chatRoom">
+        <h2 id="roomTitle" style="color:var(--gold); font-size:0.9rem; margin-top:0;"></h2>
+        <div class="msg-box" id="displayMsg"></div>
+        
+        <div class="emoji-bar">
+            <span onclick="addEmoji('😊')">😊</span><span onclick="addEmoji('🔐')">🔐</span>
+            <span onclick="addEmoji('🔥')">🔥</span><span onclick="addEmoji('✔️')">✔️</span>
+            <span onclick="addEmoji('🤝')">🤝</span><span onclick="addEmoji('📍')">📍</span>
+        </div>
+
+        <textarea id="textInput" placeholder="Andika ujumbe wako na emoji hapa..."></textarea>
+        
+        <div style="display:flex; gap:8px;">
+            <button onclick="saveMessage()" style="flex:2; background:var(--green); border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">SAVE & SEND</button>
+            <button onclick="exitRoom()" style="flex:1; background:var(--red); border:none; padding:12px; border-radius:8px; font-weight:bold; cursor:pointer;">EXIT</button>
+        </div>
+    </div>
+
+    <div style="font-size: 0.6rem; color: #555; margin-top: 25px;">
         [✔] MATRIX ENCRYPTION ACTIVE<br>
-        [✔] AUTO-DELETE: 3 DAYS INACTIVITY<br>
+        [✔] EMOJI & UTF-8 SUPPORTED<br>
         © 2026 Junior76-Expert Lab
-    </p>
+    </div>
 </div>
 
 <script>
-    function generateMatrix() {
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        let res = '';
-        for (let i = 0; i < 6; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
-        return 'T-Junior/' + res;
+    // Auto-prefix logic kwa kodi za Matrix
+    function autoPrefix(input) {
+        if (!input.value.startsWith('T-Junior/')) {
+            input.value = 'T-Junior/' + input.value.replace('T-Junior/', '');
+        }
     }
 
     function createNewRoom() {
-        const code = generateMatrix();
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        let res = '';
+        for (let i = 0; i < 5; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
+        const code = 'T-Junior/' + res;
+        
         let rooms = JSON.parse(localStorage.getItem('hub_rooms') || '[]');
-        rooms.unshift({ code: code, time: Date.now() });
+        rooms.unshift({ code: code, time: Date.now(), msg: "" });
         localStorage.setItem('hub_rooms', JSON.stringify(rooms));
         render();
-        alert("Chumba chako cha elimu kimeundwa: " + code);
+        alert("Chumba chako kimeundwa: " + code);
     }
 
     function render() {
@@ -85,34 +108,60 @@
         rooms = rooms.filter(r => (Date.now() - r.time) < expiry);
         localStorage.setItem('hub_rooms', JSON.stringify(rooms));
 
-        list.innerHTML = rooms.length ? '' : '<p style="font-size:0.7rem; color:#666;">Hakuna chumba kilicho hai. Tengeneza kipya.</p>';
+        list.innerHTML = rooms.length ? '' : '<p style="font-size:0.7rem; color:#444;">No active rooms.</p>';
         rooms.forEach(r => {
             list.innerHTML += `
                 <div class="room-card">
-                    <span style="color:var(--green); font-size:0.7rem; font-weight:bold; float:right;">LIVE ✔</span>
+                    <span style="color:var(--green); font-size:0.65rem; font-weight:bold; float:right;">LIVE ✔</span>
                     <span class="matrix-code">${r.code}</span><br>
-                    <button class="invite-btn" onclick="invite('${r.code}')">MUALIKE MWENZAKO</button>
-                    <button onclick="del('${r.code}')" style="background:none; color:var(--red); border:none; font-size:0.7rem; cursor:pointer; margin-left:10px;">Futa</button>
+                    <button onclick="invite('${r.code}')" style="background:#fff; border:none; padding:5px 10px; border-radius:5px; font-size:0.65rem; font-weight:bold; cursor:pointer; margin-top:8px;">MUALIKE MWENZAKO</button>
                 </div>`;
         });
     }
 
-    function invite(code) {
-        const text = "JUNIOR PRIVAT HUB (Education):\nKaribu kwenye chumba cha siri.\nKodi: " + code + "\nLink: " + window.location.href;
-        navigator.clipboard.writeText(text);
-        alert("Link ya mwaliko imeshakuwa 'Copied'. Itume kwa huyo rafiki yako wa chuo.");
-    }
-
-    function del(c) {
-        let r = JSON.parse(localStorage.getItem('hub_rooms') || '[]');
-        localStorage.setItem('hub_rooms', JSON.stringify(r.filter(x => x.code !== c)));
-        render();
-    }
-
     function enterRoom() {
         const val = document.getElementById('roomInput').value;
-        if(val.startsWith('T-Junior/')) alert("Umeingia Kwenye Room Salama: " + val);
-        else alert("Kodi Sio Sahihi!");
+        let rooms = JSON.parse(localStorage.getItem('hub_rooms') || '[]');
+        let room = rooms.find(r => r.code === val);
+
+        if(room) {
+            document.getElementById('mainInterface').style.display = 'none';
+            document.getElementById('chatRoom').style.display = 'block';
+            document.getElementById('roomTitle').innerText = "PRIVATE ROOM: " + val;
+            document.getElementById('displayMsg').innerHTML = room.msg || "<i>Chumba kipo wazi. Unaweza kuandika ujumbe na emoji hapa...</i>";
+        } else {
+            alert("Kodi Sio Sahihi!");
+        }
+    }
+
+    function addEmoji(emoji) {
+        document.getElementById('textInput').value += emoji;
+    }
+
+    function saveMessage() {
+        const val = document.getElementById('roomInput').value;
+        const msg = document.getElementById('textInput').value;
+        let rooms = JSON.parse(localStorage.getItem('hub_rooms') || '[]');
+        let idx = rooms.findIndex(r => r.code === val);
+        
+        if(idx !== -1) {
+            rooms[idx].msg = msg;
+            localStorage.setItem('hub_rooms', JSON.stringify(rooms));
+            document.getElementById('displayMsg').innerHTML = msg;
+            document.getElementById('textInput').value = "";
+            alert("Ujumbe na Emoji zimehifadhiwa!");
+        }
+    }
+
+    function exitRoom() {
+        document.getElementById('mainInterface').style.display = 'block';
+        document.getElementById('chatRoom').style.display = 'none';
+    }
+
+    function invite(code) {
+        const text = "JUNIOR PRIVAT HUB:\nChumba cha Siri: " + code + "\nLink: " + window.location.href;
+        navigator.clipboard.writeText(text);
+        alert("Link ya mwaliko imenakiliwa!");
     }
 
     render();
