@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JUNIOR PRIVAT HUB | Secure Chat</title>
+    <style>
+        :root { --gold: #D4AF37; --white: #ffffff; --green: #2ecc71; --bg: #0a0a0a; }
+        body { background: var(--bg); color: var(--white); font-family: 'Segoe UI', sans-serif; text-align: center; padding: 10px; margin: 0; }
+        .hub-container { max-width: 480px; margin: 20px auto; border: 1px solid var(--gold); padding: 25px; border-radius: 20px; background: rgba(212, 175, 55, 0.02); }
+        h1 { color: var(--gold); font-size: 1.6rem; text-transform: uppercase; margin-bottom: 5px; }
+        
+        .user-options { display: flex; justify-content: space-between; margin: 25px 0; gap: 10px; }
+        .nav-btn { flex: 1; padding: 15px 5px; border-radius: 12px; border: 1px solid var(--gold); cursor: pointer; font-size: 0.8rem; background: #111; color: #fff; transition: 0.3s; font-weight: bold; }
+        .nav-btn:hover { background: var(--gold); color: #000; }
+        
+        .room-storage { background: #151515; border-radius: 15px; padding: 15px; text-align: left; margin-top: 25px; border: 1px solid #333; }
+        .room-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #222; font-size: 0.85rem; }
+        .code-tag { color: var(--gold); font-family: 'Courier New', monospace; font-weight: bold; }
+        .read-status { color: var(--green); font-size: 0.75rem; font-weight: bold; }
+
+        .destroy-btn { background: #c0392b; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.7rem; font-weight: bold; }
+        input { width: 85%; padding: 12px; margin: 15px 0; border-radius: 8px; border: 1px solid var(--gold); background: #000; color: #fff; text-align: center; }
+        .access-btn { width: 93%; background: var(--gold); color: #000; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+
+<div class="hub-container">
+    <h1>JUNIOR PRIVAT HUB 🛡️</h1>
+    <p style="font-size: 0.8rem; color: #888;">Daily Limit: 10,000 Pages</p>
+
+    <div class="user-options">
+        <div class="nav-btn" onclick="alert('First User ID: T-Junior/00001 Generated')">👤 FIRST USER</div>
+        <div class="nav-btn" onclick="alert('Join as Seconds User')">👥 SECONDS</div>
+        <div class="nav-btn" onclick="alert('Login to your Room Book')">🔑 LOG IN</div>
+    </div>
+
+    <div class="room-storage">
+        <p style="color: var(--gold); font-size: 0.9rem; margin: 0 0 15px 0; font-weight: bold;">📇 SAVED ROOM PAGES</p>
+        <div id="roomList">
+            <div class="room-item">
+                <span>Secret Page</span>
+                <span class="code-tag">T-Junior/674291</span>
+                <span class="read-status">READ ✔</span>
+                <button class="destroy-btn" onclick="this.parentElement.innerHTML='<span style=\'color:#c0392b\'>PAGE WAS DESTROYED BY OWNER</span>'">DESTROY</button>
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <input type="text" placeholder="Enter T-Junior/XXXXXX">
+        <button class="access-btn">Access Private Room</button>
+    </div>
+
+    <p style="font-size: 0.7rem; color: #555; margin-top: 30px;">
+        [✔] High-Fidelity Audio Filter Active<br>
+        © 2026 Junior76-Expert Lab
+    </p>
+</div>
+
+</body>
+</html>
