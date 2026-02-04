@@ -3,167 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JUNIOR PRIVATE HUB v2.0</title>
+    <title>JUNIOR PRIVATE HUB v3</title>
     <style>
-        :root { --gold: #D4AF37; --bg: #000; --card: #111; }
+        :root { --gold: #D4AF37; --bg: #000; }
         * { font-family: 'Courier New', monospace; box-sizing: border-box; }
         body { background: var(--bg); color: #fff; margin: 0; padding: 10px; }
+        .main-container { max-width: 450px; margin: auto; border: 2px solid var(--gold); border-radius: 25px; padding: 15px; min-height: 95vh; background: #000; position: relative; }
         
-        .main-container { max-width: 450px; margin: auto; border: 2px solid var(--gold); border-radius: 25px; padding: 15px; min-height: 95vh; background: #000; }
-        #sessionTime { color: var(--gold); text-align: center; font-size: 0.75rem; margin-bottom: 10px; border-bottom: 1px solid #222; padding-bottom: 5px; }
-
-        .chat-box { height: 400px; overflow-y: auto; display: flex; flex-direction: column; background: #050505; padding: 10px; border-radius: 15px; border: 1px solid #222; margin-bottom: 10px; }
-        .bubble { padding: 12px; border-radius: 15px; margin: 8px 0; max-width: 85%; color: #000; position: relative; font-weight: bold; }
-        .owner { align-self: flex-end; background: #fff; border-bottom-right-radius: 2px; } 
-        .guest { align-self: flex-start; background: var(--gold); border-bottom-left-radius: 2px; }
+        /* Login Styles */
+        .gate-input { width: 100%; padding: 15px; background: #111; border: 1px solid #333; color: #fff; border-radius: 12px; margin-bottom: 12px; }
+        .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; background: var(--gold); color: #000; text-transform: uppercase; }
         
-        .msg-meta { font-size: 0.6rem; color: #444; display: flex; justify-content: space-between; margin-top: 5px; }
-        .action-link { color: red; text-decoration: underline; cursor: pointer; margin-left: 8px; }
+        /* Chat Area */
+        #sessionHeader { text-align: center; font-size: 0.75rem; color: var(--gold); border-bottom: 1px solid #222; padding-bottom: 10px; margin-bottom: 10px; }
+        .chat-screen { height: 420px; overflow-y: auto; display: flex; flex-direction: column; background: #050505; padding: 10px; border-radius: 15px; border: 1px solid #222; }
+        .msg { padding: 12px; border-radius: 15px; margin: 8px 0; max-width: 85%; color: #000; font-weight: bold; position: relative; }
+        .me { align-self: flex-end; background: #fff; border-bottom-right-radius: 2px; }
+        .them { align-self: flex-start; background: var(--gold); border-bottom-left-radius: 2px; }
+        
+        .meta { font-size: 0.6rem; color: #555; display: flex; justify-content: space-between; margin-top: 5px; }
+        .tool-bar { display: grid; grid-template-columns: 1fr 1.5fr 1fr; gap: 5px; margin: 10px 0; }
+        .tool-btn { background: #222; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 10px; font-size: 0.7rem; cursor: pointer; }
+        .voice-active { background: #ff3333 !important; }
 
-        input, textarea { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 10px; margin-bottom: 10px; }
-        .btn { padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; margin-bottom: 5px; }
-        .btn-gold { background: var(--gold); color: #000; }
-        .tool-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 10px; }
         img { width: 100%; border-radius: 8px; margin-top: 5px; }
-        audio { width: 100%; height: 30px; margin-top: 5px; }
+        audio { width: 100%; height: 35px; margin-top: 5px; }
+        textarea { width: 100%; padding: 12px; background: #111; border: 1px solid #333; color: #fff; border-radius: 10px; resize: none; }
     </style>
 </head>
 <body>
 
 <div class="main-container">
     <h3 style="text-align:center; color:var(--gold); margin:5px;">JUNIOR PRIVATE HUB 🛡️</h3>
-    <div id="sessionTime"></div>
 
     <div id="gate">
-        <p style="font-size: 0.8rem; text-align: center; color: #888;">Ingiza jina lako na Password ya Chumba kujiunga</p>
-        <input type="text" id="alias" placeholder="Jina Lako (Mf: Mgeni au Junior)">
-        <input type="password" id="pass" placeholder="Password ya Chumba">
-        <button class="btn btn-gold" onclick="login()">INGIA KWENYE CHUMBA</button>
-        <button class="btn" style="background:#222; color:var(--gold);" onclick="setup()">TENGENEZA CHUMBA KIPYA (1234)</button>
+        <p style="text-align:center; font-size:0.8rem; color:#888;">Ingiza taarifa kulingana na chumba</p>
+        <input type="text" id="loginName" class="gate-input" placeholder="Jina Lako (Mf: Mgeni)">
+        <input type="password" id="loginPass" class="gate-input" placeholder="Password ya Chumba">
+        <button class="btn-main" onclick="enterRoom()">INGIA KWENYE CHUMBA</button>
+        <button onclick="createRoom()" style="background:none; border:none; color:var(--gold); width:100%; margin-top:15px; cursor:pointer;">TENGENEZA CHUMBA KIPYA (1234)</button>
     </div>
 
     <div id="hub" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <span id="roomTitle" style="color:var(--gold); font-weight:bold;"></span>
-            <button onclick="location.reload()" style="background:red; color:white; border:none; padding:4px 10px; border-radius:5px;">EXIT</button>
+        <div id="sessionHeader"></div>
+        <div style="display:flex; justify-content:space-between; padding:5px;">
+            <span id="roomNameDisplay" style="color:var(--gold); font-weight:bold;"></span>
+            <button onclick="location.reload()" style="background:red; color:#fff; border:none; border-radius:5px; padding:2px 10px;">EXIT</button>
         </div>
         
-        <div class="chat-box" id="display"></div>
+        <div class="chat-screen" id="chatDisplay"></div>
         
         <div class="tool-bar">
-            <button class="btn" style="background:#333; color:white; font-size: 0.7rem;" onclick="document.getElementById('fileIn').click()">📷 PICHA</button>
-            <button class="btn" id="voiceBtn" style="background:#333; color:white; font-size: 0.7rem;" onmousedown="startRec()" onmouseup="stopRec()">🎤 SAUTI</button>
-            <button class="btn" style="background:#333; color:white; font-size: 0.7rem;" onclick="sendGPS()">📍 MAPS</button>
+            <button class="tool-btn" onclick="document.getElementById('imgIn').click()">📷 PICHA</button>
+            <button class="tool-btn" id="micBtn" onmousedown="startVoice()" onmouseup="stopVoice()">🎤 SAUTI (SHIKILIA)</button>
+            <button class="tool-btn" onclick="sendLoc()">📍 MAPS</button>
         </div>
         
-        <input type="file" id="fileIn" style="display:none" accept="image/*" onchange="upload(this)">
-        <textarea id="input" placeholder="Andika ujumbe..."></textarea>
-        <button class="btn btn-gold" onclick="send()">TUMA UJUMBE</button>
+        <input type="file" id="imgIn" style="display:none" accept="image/*" onchange="uploadImg(this)">
+        <textarea id="msgIn" placeholder="Andika hapa..."></textarea>
+        <button class="btn-main" style="margin-top:8px;" onclick="pushMsg()">TUMA UJUMBE</button>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('JUNIOR_HUB_V20') || '{"rooms":{}}');
-    let activeKey = "", myName = "", mediaRecorder, audioChunks = [];
+    let storage = JSON.parse(localStorage.getItem('JUNIOR_STORAGE_V3') || '{"rooms":{}}');
+    let activeKey = "", user = "", rec, chunks = [];
 
-    function login() {
-        myName = document.getElementById('alias').value;
-        activeKey = document.getElementById('pass').value;
-        if(myName && db.rooms[activeKey]) {
+    // Kuingia
+    function enterRoom() {
+        user = document.getElementById('loginName').value;
+        activeKey = document.getElementById('loginPass').value;
+        if(user && storage.rooms[activeKey]) {
             document.getElementById('gate').style.display = 'none';
             document.getElementById('hub').style.display = 'block';
-            document.getElementById('roomTitle').innerText = "CHUMBA: " + db.rooms[activeKey].name;
-            updateClock(); setInterval(updateClock, 1000);
-            render();
-        } else { alert("Hakikisha umejaza jina na Password ni sahihi!"); }
+            document.getElementById('roomNameDisplay').innerText = "CHUMBA: " + storage.rooms[activeKey].name;
+            runClock(); setInterval(runClock, 1000);
+            renderChat();
+        } else { alert("Jina au Password ya chumba ni makosa!"); }
     }
 
-    function setup() {
-        if(prompt("Ingiza Master Code:") === "1234") {
+    // Kutengeneza
+    function createRoom() {
+        if(prompt("Ingiza Code ya kutengeneza:") === "1234") {
             let n = prompt("Jina la Chumba:");
-            let p = prompt("Password ya Chumba (Wape wageni hii):");
+            let p = prompt("Weka Password ya Chumba hiki:");
             if(n && p) {
-                db.rooms[p] = { name: n, msgs: [] };
-                save(); alert("Chumba kimetengenezwa! Mpe mgeni password hii: " + p);
+                storage.rooms[p] = { name: n, chat: [] };
+                localStorage.setItem('JUNIOR_STORAGE_V3', JSON.stringify(storage));
+                alert("Chumba tayari! Mpe mgeni password: " + p);
             }
         }
     }
 
-    function updateClock() {
+    function runClock() {
         let d = new Date();
-        document.getElementById('sessionTime').innerText = `[ SESSION ] ${d.toLocaleDateString()} | ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+        document.getElementById('sessionHeader').innerText = `[ SESSION ] ${d.toLocaleDateString()} | ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
     }
 
-    function render() {
-        const div = document.getElementById('display');
-        div.innerHTML = db.rooms[activeKey].msgs.map((m, i) => {
-            let isMe = m.u === myName;
-            return `<div class="bubble ${isMe ? 'owner' : 'guest'}" onclick="copyMsg('${m.t}')">
-                        <span style="font-size:0.6rem; color:#444;">${m.u}</span><br>
+    function renderChat() {
+        const display = document.getElementById('chatDisplay');
+        display.innerHTML = storage.rooms[activeKey].chat.map((m, i) => {
+            let isMe = m.u === user;
+            return `<div class="msg ${isMe ? 'me' : 'them'}" onclick="copy('${m.t}')">
+                        <span style="font-size:0.6rem; color:#666;">${m.u}</span><br>
                         ${m.t}
-                        <div class="msg-meta">
+                        <div class="meta">
                             <span>${m.tm}</span>
-                            ${isMe ? `<span><span class="action-link" onclick="editMsg(${i})">EDIT</span><span class="action-link" onclick="delMsg(${i})">DEL</span></span>` : ''}
+                            ${isMe ? `<span><b onclick="editMsg(${i})">EDIT</b> | <b onclick="delMsg(${i})">DEL</b></span>` : ''}
                         </div>
                     </div>`;
         }).join('');
-        div.scrollTop = div.scrollHeight;
+        display.scrollTop = display.scrollHeight;
     }
 
-    function send() {
-        let txt = document.getElementById('input').value;
-        if(!txt) return;
-        db.rooms[activeKey].msgs.push({ u: myName, t: txt, tm: new Date().toLocaleTimeString() });
-        save(); render(); document.getElementById('input').value = "";
+    function pushMsg() {
+        let val = document.getElementById('msgIn').value;
+        if(!val) return;
+        storage.rooms[activeKey].chat.push({ u: user, t: val, tm: new Date().toLocaleTimeString() });
+        save(); renderChat(); document.getElementById('msgIn').value = "";
     }
 
-    // SAUTI (Voice Messages)
-    async function startRec() {
-        let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(stream);
-        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-        mediaRecorder.onstop = () => {
-            let blob = new Blob(audioChunks, { type: 'audio/ogg' });
-            let reader = new FileReader();
-            reader.onload = e => {
-                db.rooms[activeKey].msgs.push({ u: myName, t: `<audio controls src="${e.target.result}"></audio>`, tm: new Date().toLocaleTimeString() });
-                save(); render();
+    async function startVoice() {
+        let s = await navigator.mediaDevices.getUserMedia({ audio: true });
+        rec = new MediaRecorder(s);
+        rec.ondataavailable = e => chunks.push(e.data);
+        rec.onstop = () => {
+            let b = new Blob(chunks, { type: 'audio/ogg' });
+            let r = new FileReader();
+            r.onload = e => {
+                storage.rooms[activeKey].chat.push({ u: user, t: `<audio controls src="${e.target.result}"></audio>`, tm: new Date().toLocaleTimeString() });
+                save(); renderChat();
             };
-            reader.readAsDataURL(blob);
-            audioChunks = [];
+            r.readAsDataURL(b); chunks = [];
         };
-        mediaRecorder.start();
-        document.getElementById('voiceBtn').style.background = "red";
+        rec.start(); document.getElementById('micBtn').classList.add('voice-active');
     }
-    function stopRec() { 
-        mediaRecorder.stop(); 
-        document.getElementById('voiceBtn').style.background = "#333";
-    }
+    function stopVoice() { rec.stop(); document.getElementById('micBtn').classList.remove('voice-active'); }
 
-    // PICHA & UTENDAJI MINGINE
-    function upload(el) {
+    function uploadImg(el) {
         let r = new FileReader();
-        r.onload = (e) => {
-            db.rooms[activeKey].msgs.push({ u: myName, t: `<img src="${e.target.result}">`, tm: new Date().toLocaleTimeString() });
-            save(); render();
+        r.onload = e => {
+            storage.rooms[activeKey].chat.push({ u: user, t: `<img src="${e.target.result}">`, tm: new Date().toLocaleTimeString() });
+            save(); renderChat();
         };
         r.readAsDataURL(el.files[0]);
     }
 
-    function delMsg(i) { if(confirm("Futa ujumbe?")) { db.rooms[activeKey].msgs.splice(i,1); save(); render(); } }
+    function delMsg(i) { if(confirm("Futa?")) { storage.rooms[activeKey].chat.splice(i,1); save(); renderChat(); } }
     function editMsg(i) {
-        let n = prompt("Hariri ujumbe:", db.rooms[activeKey].msgs[i].t);
-        if(n) { db.rooms[activeKey].msgs[i].t = n + " (Edited)"; save(); render(); }
+        let n = prompt("Edit:", storage.rooms[activeKey].chat[i].t);
+        if(n) { storage.rooms[activeKey].chat[i].t = n + " (Edited)"; save(); renderChat(); }
     }
-    function copyMsg(t) { navigator.clipboard.writeText(t); alert("Copied!"); }
-    function sendGPS() {
+    function copy(t) { navigator.clipboard.writeText(t); alert("Copied!"); }
+    function sendLoc() {
         navigator.geolocation.getCurrentPosition(p => {
-            let link = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
-            db.rooms[activeKey].msgs.push({ u: myName, t: `📍 <a href="${link}" target="_blank" style="color:blue;">Location Yangu</a>`, tm: new Date().toLocaleTimeString() });
-            save(); render();
+            let url = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
+            storage.rooms[activeKey].chat.push({ u: user, t: `📍 <a href="${url}" target="_blank">Eneo Langu</a>`, tm: new Date().toLocaleTimeString() });
+            save(); renderChat();
         });
     }
-    function save() { localStorage.setItem('JUNIOR_HUB_V20', JSON.stringify(db)); }
+    function save() { localStorage.setItem('JUNIOR_STORAGE_V3', JSON.stringify(storage)); }
 </script>
 </body>
 </html>
