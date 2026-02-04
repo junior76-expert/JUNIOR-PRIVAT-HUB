@@ -3,153 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JUNIOR HUB | Chronos Protocol</title>
+    <title>JUNIOR PRIVATE HUB | Gold Edition</title>
     <style>
-        :root { --green: #00ff41; --gold: #D4AF37; --bg: #000; }
+        :root { --gold: #D4AF37; --bg: #0a0a0a; --card: #141414; --white: #ffffff; }
         * { font-family: 'Courier New', monospace; box-sizing: border-box; }
-        body { background: var(--bg); color: var(--green); margin: 0; padding: 10px; overflow-x: hidden; }
-        .main-frame { max-width: 480px; margin: auto; border: 1px solid var(--green); padding: 15px; position: relative; }
+        body { background: var(--bg); color: var(--white); margin: 0; padding: 10px; }
         
-        /* Dynamic Chronometer Style */
-        #chronometer { font-size: 0.75rem; background: #111; padding: 8px; border-radius: 5px; border: 1px solid var(--gold); color: var(--gold); text-align: center; margin-bottom: 10px; display: none; }
+        /* Container kuu ya dhahabu kama picha ya kwanza */
+        .hub-frame { max-width: 450px; margin: auto; border: 2px solid var(--gold); border-radius: 25px; padding: 20px; background: #000; min-height: 90vh; }
         
-        .terminal { height: 450px; overflow-y: auto; background: #050505; border: 1px solid #222; padding: 10px; display: flex; flex-direction: column; }
-        .log-entry { padding: 8px; margin: 5px 0; max-width: 85%; border: 1px solid #333; font-size: 0.85rem; position: relative; }
-        .owner-log { align-self: flex-end; background: #111; color: var(--gold); border-left: 3px solid var(--gold); }
-        .guest-log { align-self: flex-start; background: #000; color: var(--green); border-left: 3px solid var(--green); }
+        /* Saa ya Milisec juu */
+        #liveClock { font-size: 0.7rem; color: var(--gold); text-align: center; border: 1px solid #333; padding: 5px; border-radius: 10px; margin-bottom: 15px; display: none; }
         
-        .input-area { width: 100%; background: #000; border: 1px solid var(--green); color: var(--green); padding: 12px; margin-top: 10px; outline: none; }
-        .btn-exe { width: 100%; padding: 12px; background: transparent; border: 1px solid var(--green); color: var(--green); cursor: pointer; text-transform: uppercase; font-weight: bold; margin-top: 5px; }
-        .btn-exe:hover { background: var(--green); color: #000; }
-        .meta-info { font-size: 0.6rem; opacity: 0.6; margin-top: 4px; }
+        /* Sehemu ya Mazungumzo - Style ya awali */
+        .chat-box { height: 400px; overflow-y: auto; display: flex; flex-direction: column; background: #050505; padding: 10px; border-radius: 15px; border: 1px solid #222; }
+        .bubble { padding: 12px; border-radius: 15px; margin: 8px 0; max-width: 85%; color: #000; font-weight: bold; position: relative; }
+        .owner { align-self: flex-end; background: var(--white); border-radius: 15px 15px 2px 15px; } /* Kulia kama picha yako */
+        .guest { align-self: flex-start; background: #e2e2e2; border-radius: 15px 15px 15px 2px; } /* Kushoto */
+        
+        .sender { font-size: 0.6rem; display: block; margin-bottom: 4px; text-transform: uppercase; color: #555; }
+        .time-tag { font-size: 0.5rem; text-align: right; margin-top: 4px; opacity: 0.7; }
+
+        /* Inputs na Vifungo */
+        input, textarea { width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 12px; margin-bottom: 10px; }
+        .btn { padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; margin-top: 5px; }
+        .btn-gold { background: var(--gold); color: #000; }
+        .btn-red { background: #ff4444; color: #fff; }
+        
+        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        img { width: 100%; border-radius: 10px; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-<div class="main-frame">
-    <div id="chronometer">INITIALIZING SENSOR...</div>
+<div class="hub-frame">
+    <h2 style="text-align:center; color:var(--gold);">JUNIOR PRIVATE HUB 🛡️</h2>
+    <div id="liveClock"></div>
 
-    <div id="gate">
-        <h3 style="text-align:center; color:var(--gold);">[ DARK HUB ACCESS ]</h3>
-        <input type="password" id="passKey" class="input-area" placeholder="ENTER SECTOR KEY (1234 TO CREATE)">
-        <button class="btn-exe" onclick="accessVault()">BYPASS FIREWALL</button>
+    <div id="loginSection">
+        <p style="text-align:center; font-size:0.8rem; color:#aaa;">INGIZA TAARIFA KULINGANA NA CHUMBA</p>
+        <input type="text" id="userName" placeholder="Jina Lako (Mfano: JUNIOR)">
+        <input type="password" id="roomKey" placeholder="Password ya Chumba">
+        <button class="btn btn-gold" onclick="enterRoom()">FUNGUA MFUMO</button>
+        <hr style="border: 0.5px solid #222; margin: 20px 0;">
+        <button class="btn" style="background:#222; color:var(--gold);" onclick="showSetup()">TENGENEZA CHUMBA KIPYA (1234)</button>
     </div>
 
-    <div id="generator" style="display:none;">
-        <p>[ NEW SECTOR AUTHORIZATION ]</p>
-        <input type="text" id="newName" class="input-area" placeholder="ASSIGN SECTOR ID">
-        <input type="password" id="newKey" class="input-area" placeholder="SET ENCRYPTION KEY">
-        <button class="btn-exe" onclick="generate()">EXECUTE GENERATION</button>
+    <div id="setupSection" style="display:none;">
+        <input type="password" id="masterCode" placeholder="Ingiza 1234">
+        <input type="text" id="newRoomName" placeholder="Jina la Chumba (Identity)">
+        <input type="password" id="newRoomPass" placeholder="Weka Password ya Chumba">
+        <button class="btn btn-gold" onclick="saveRoom()">SAVE & GENERATE</button>
     </div>
 
-    <div id="core" style="display:none;">
-        <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-bottom:5px;">
-            <span id="activeID" style="color:var(--gold);"></span>
-            <span style="color:red; cursor:pointer;" onclick="terminate()">[ TERMINATE ]</span>
+    <div id="vaultSection" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <span id="displayRoom" style="color:var(--gold); font-weight:bold; font-size:0.8rem;"></span>
+            <button class="btn btn-red" style="width:auto; padding:5px 15px; margin:0;" onclick="location.reload()">BACK</button>
         </div>
-        <div class="terminal" id="display"></div>
-        <textarea id="msg" class="input-area" placeholder="ENCRYPT MESSAGE..."></textarea>
-        <button class="btn-exe" onclick="transmit()">TRANSMIT</button>
+        
+        <div class="chat-box" id="chatDisplay"></div>
+        
+        <div class="tool-grid">
+            <button class="btn" style="background:#333; color:white;" onclick="document.getElementById('fileIn').click()">📷 PICHA</button>
+            <button class="btn" style="background:#333; color:white;" onclick="shareLoc()">📍 MAPS</button>
+        </div>
+        
+        <input type="file" id="fileIn" style="display:none" accept="image/*" onchange="handlePic(this)">
+        <textarea id="msgInput" placeholder="Andika ujumbe (Emoji zinaruhusiwa)..."></textarea>
+        <button class="btn btn-gold" onclick="sendMsg()">TUMA UJUMBE</button>
     </div>
 </div>
 
 <script>
-    let vault = JSON.parse(localStorage.getItem('PROTOCOL_X_V6') || '{"sectors":{}}');
+    let db = JSON.parse(localStorage.getItem('JUNIOR_VAULT_FINAL_V1') || '{"rooms":{}}');
     let activeKey = "";
-    let userAlias = "";
-    let clockInterval;
+    let myName = "";
+    let timer;
 
-    // --- CHRONOMETER ENGINE ---
-    function updateClock() {
-        const now = new Date();
-        const d = now.toLocaleDateString();
-        const t = now.getHours().toString().padStart(2, '0') + ":" + 
-                  now.getMinutes().toString().padStart(2, '0') + ":" + 
-                  now.getSeconds().toString().padStart(2, '0') + ":" + 
-                  now.getMilliseconds().toString().padStart(3, '0');
-        document.getElementById('chronometer').innerText = `[ SESSION ACTIVE ] TAREHE: ${d} | TIME: ${t}`;
+    function showSetup() {
+        if(document.getElementById('masterCode').value === "1234") {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('setupSection').style.display = 'block';
+        } else { alert("Ingiza 1234 kwanza!"); }
     }
 
-    // --- AUTO-DESTRUCT LOGIC (5 DAYS) ---
-    function checkExpiry() {
-        const now = Date.now();
-        const expiryTime = 5 * 24 * 60 * 60 * 1000; // 5 Days in ms
-        for (let k in vault.sectors) {
-            if (now - vault.sectors[k].lastUsed > expiryTime) {
-                delete vault.sectors[k]; // Futa kabisa
-            }
+    function saveRoom() {
+        const name = document.getElementById('newRoomName').value;
+        const pass = document.getElementById('newRoomPass').value;
+        if(name && pass) {
+            db.rooms[pass] = { name: name, msgs: [], created: Date.now() };
+            localStorage.setItem('JUNIOR_VAULT_FINAL_V1', JSON.stringify(db));
+            alert("Chumba Kimeundwa!"); location.reload();
         }
-        localStorage.setItem('PROTOCOL_X_V6', JSON.stringify(vault));
     }
 
-    function accessVault() {
-        checkExpiry();
-        const key = document.getElementById('passKey').value;
-        if(key === "1234") {
-            document.getElementById('gate').style.display = 'none';
-            document.getElementById('generator').style.display = 'block';
-        } else if(vault.sectors[key]) {
-            activeKey = key;
-            userAlias = prompt("ENTER YOUR OPERATIVE ALIAS:") || "ANON";
-            startSession();
-        } else { alert("ACCESS DENIED: KEY INVALID OR SECTOR EXPIRED."); }
+    function startClock() {
+        timer = setInterval(() => {
+            const n = new Date();
+            document.getElementById('liveClock').innerText = `[ SESSION ] ${n.toLocaleDateString()} | ${n.getHours()}:${n.getMinutes()}:${n.getSeconds()}:${n.getMilliseconds()}`;
+        }, 1);
     }
 
-    function generate() {
-        const id = document.getElementById('newName').value;
-        const key = document.getElementById('newKey').value;
-        if(!id || !key) return;
-        vault.sectors[key] = { name: id, logs: [], lastUsed: Date.now() };
-        localStorage.setItem('PROTOCOL_X_V6', JSON.stringify(vault));
-        alert("SECTOR " + id + " CREATED. DURATION: 5 DAYS.");
-        location.reload();
+    function enterRoom() {
+        myName = document.getElementById('userName').value;
+        activeKey = document.getElementById('roomKey').value;
+        if(db.rooms[activeKey]) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('vaultSection').style.display = 'block';
+            document.getElementById('liveClock').style.display = 'block';
+            document.getElementById('displayRoom').innerText = "ROOM: " + db.rooms[activeKey].name;
+            startClock();
+            render();
+            // Reset timer ya siku 5 kila unapoingia
+            db.rooms[activeKey].created = Date.now();
+            localStorage.setItem('JUNIOR_VAULT_FINAL_V1', JSON.stringify(db));
+        } else { alert("Chumba hakipo au kimefutika!"); }
     }
 
-    function startSession() {
-        document.getElementById('gate').style.display = 'none';
-        document.getElementById('core').style.display = 'block';
-        document.getElementById('chronometer').style.display = 'block';
-        document.getElementById('activeID').innerText = "SECTOR: " + vault.sectors[activeKey].name;
-        
-        // Washa Saa
-        clockInterval = setInterval(updateClock, 1);
-        
-        // Update Last Used
-        vault.sectors[activeKey].lastUsed = Date.now();
-        localStorage.setItem('PROTOCOL_X_V6', JSON.stringify(vault));
-        renderLogs();
-    }
-
-    function renderLogs() {
-        const display = document.getElementById('display');
-        const sector = vault.sectors[activeKey];
-        display.innerHTML = sector.logs.map(l => {
-            const isOwner = l.u.toUpperCase() === sector.name.toUpperCase();
-            return `
-                <div class="log-entry ${isOwner ? 'owner-log' : 'guest-log'}">
-                    <div style="font-size:0.6rem; font-weight:bold;">[ ${l.u} ]</div>
-                    ${l.t}
-                    <div class="meta-info">STAMP: ${l.tm}</div>
-                </div>`;
+    function render() {
+        const div = document.getElementById('chatDisplay');
+        const rName = db.rooms[activeKey].name.toUpperCase();
+        div.innerHTML = db.rooms[activeKey].msgs.map(m => {
+            const isMe = m.u.toUpperCase() === rName;
+            return `<div class="bubble ${isMe ? 'owner' : 'guest'}">
+                        <span class="sender">${m.u}</span>
+                        ${m.t}
+                        <div class="time-tag">${m.time}</div>
+                    </div>`;
         }).join('');
-        display.scrollTop = display.scrollHeight;
+        div.scrollTop = div.scrollHeight;
     }
 
-    function transmit() {
-        const txt = document.getElementById('msg').value;
-        if(!txt) return;
-        const time = new Date().toLocaleTimeString();
-        vault.sectors[activeKey].logs.push({ u: userAlias, t: txt, tm: time });
-        vault.sectors[activeKey].lastUsed = Date.now(); // Reset 5-day timer
-        localStorage.setItem('PROTOCOL_X_V6', JSON.stringify(vault));
-        renderLogs();
-        document.getElementById('msg').value = "";
+    function sendMsg() {
+        const val = document.getElementById('msgInput').value;
+        if(!val) return;
+        db.rooms[activeKey].msgs.push({ u: myName, t: val, time: new Date().toLocaleTimeString() });
+        localStorage.setItem('JUNIOR_VAULT_FINAL_V1', JSON.stringify(db));
+        render(); document.getElementById('msgInput').value = "";
     }
 
-    function terminate() {
-        clearInterval(clockInterval);
-        location.reload();
+    function handlePic(input) {
+        if(input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                db.rooms[activeKey].msgs.push({ u: myName, t: `<img src="${e.target.result}">`, time: new Date().toLocaleTimeString() });
+                localStorage.setItem('JUNIOR_VAULT_FINAL_V1', JSON.stringify(db));
+                render();
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
+
+    function shareLoc() {
+        navigator.geolocation.getCurrentPosition(p => {
+            const url = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
+            db.rooms[activeKey].msgs.push({ u: myName, t: `📍 Location: <a href="${url}" target="_blank">Fungua Ramani</a>`, time: new Date().toLocaleTimeString() });
+            localStorage.setItem('JUNIOR_VAULT_FINAL_V1', JSON.stringify(db));
+            render();
+        });
+    }
+
+    // Auto-delete baada ya siku 5
+    setInterval(() => {
+        const s5 = 5 * 24 * 60 * 60 * 1000;
+        for(let k in db.rooms) {
+            if(Date.now() - db.rooms[k].created > s5) { delete db.rooms[k]; }
+        }
+        localStorage.setItem('JUNIOR_VAULT_FINAL_V1', JSON.stringify(db));
+    }, 3600000); // Kagua kila saa moja
 </script>
 </body>
 </html>
