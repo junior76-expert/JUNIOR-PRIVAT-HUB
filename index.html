@@ -4,162 +4,178 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <title>JUNIOR PRIVATE HUB | Admin Vault</title>
+    <title>JUNIOR PRIVAT HUB | Secure Hub</title>
     <style>
-        :root { --gold: #D4AF37; --white: #F5F5F5; --green: #00FF41; --bg: #000000; --red: #FF3131; --blue: #007BFF; }
+        :root { --gold: #D4AF37; --white: #F5F5F5; --green: #00FF41; --bg: #000000; --red: #FF3131; }
         body { background: var(--bg); color: var(--white); font-family: 'Courier New', monospace; margin: 0; padding: 10px; }
         .hub-container { max-width: 480px; margin: auto; border: 2px solid var(--gold); padding: 15px; border-radius: 20px; text-align: center; }
         
-        /* Message Bubbles */
-        .msg-container { display: flex; flex-direction: column; height: 380px; overflow-y: auto; padding: 10px; background: rgba(10,10,10,0.9); border-radius: 12px; border: 1px solid #222; }
-        .first-user-msg { align-self: flex-start; background: #111; color: var(--green); border: 1px solid var(--green); padding: 10px; border-radius: 15px 15px 15px 0; margin: 5px 0; max-width: 85%; }
-        .second-user-msg { align-self: flex-end; background: #222; color: var(--white); border: 1px solid var(--white); padding: 10px; border-radius: 15px 15px 0 15px; margin: 5px 0; max-width: 85%; }
+        /* Chat Matrix bubbles */
+        .msg-container { display: flex; flex-direction: column; height: 350px; overflow-y: auto; padding: 10px; background: #050505; border: 1px solid #222; border-radius: 12px; margin-bottom: 10px; }
+        .owner-msg { align-self: flex-start; background: #111; color: var(--green); border: 1px solid var(--green); padding: 10px; border-radius: 10px 10px 10px 0; margin: 5px 0; max-width: 80%; }
+        .guest-msg { align-self: flex-end; background: #222; color: var(--white); border: 1px solid #eee; padding: 10px; border-radius: 10px 10px 0 10px; margin: 5px 0; max-width: 80%; }
         
-        /* Buttons & Inputs */
-        .btn { padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; margin-top: 10px; }
-        .btn-gold { background: var(--gold); color: #000; }
+        /* Interactive Buttons */
+        .btn { padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; margin-top: 5px; }
+        .btn-gold { background: var(--gold); color: #000; width: 100%; }
+        .btn-red { background: var(--red); color: #fff; width: 100%; }
+        .btn-white { background: var(--white); color: #000; width: 100%; }
         .btn-green { background: var(--green); color: #000; }
-        .btn-blue { background: var(--blue); color: #fff; }
-        input, textarea { width: 92%; padding: 12px; background: #000; border: 1px solid #333; color: white; border-radius: 8px; margin-bottom: 10px; text-align: center; }
         
-        .admin-label { color: var(--red); font-size: 0.6rem; font-weight: bold; margin-bottom: 5px; }
+        input, textarea { width: 90%; padding: 12px; background: #000; border: 1px solid #333; color: white; border-radius: 8px; margin-bottom: 10px; text-align: center; }
+        .info-box { background: rgba(0,255,65,0.1); border: 1px solid var(--green); padding: 10px; border-radius: 10px; font-size: 0.75rem; color: var(--green); margin-bottom: 10px; }
     </style>
 </head>
 <body class="notranslate">
 
-<div class="hub-container">
-    <h1 style="color:var(--gold);">JUNIOR PRIVATE HUB 🛡️</h1>
+<div class="hub-container" id="app">
+    <h1 style="color:var(--gold); margin-bottom:5px;">JUNIOR PRIVAT HUB 🛡️</h1>
     
-    <div id="loginPage">
-        <h3>🔒 ACCESS CONTROL</h3>
-        <input type="password" id="vaultPass" placeholder="Weka Passcode">
-        <button class="btn btn-gold" onclick="accessVault()">FUNGUA MFUMO</button>
-        <p style="font-size:0.6rem; color:#444;">Default Pass: 1234 | Admin: 7676</p>
+    <div id="loginSection">
+        <h3 style="font-size:0.8rem;">🔒 INGIA KWENYE BOX LAKO</h3>
+        <input type="password" id="masterKey" placeholder="Weka Passcode Yako">
+        <button class="btn btn-gold" onclick="openVault()">FUNGUA VAULT</button>
+        <p style="font-size:0.6rem; color:#555; margin-top:15px;">Ukisahau password, funguo zako hazitaonekana milele.</p>
     </div>
 
-    <div id="adminPanel" style="display:none;">
-        <div class="admin-label">⚠️ ADMIN SECRET MODE ACTIVE</div>
-        <div style="background:#111; padding:15px; border-radius:12px; border:1px solid var(--red); margin-bottom:15px;">
-            <h4 style="color:var(--red); margin:0;">MASTER BACKUP</h4>
-            <button class="btn btn-blue" onclick="downloadBackup()">📥 DOWNLOAD ALL DATA (JSON)</button>
-            <button class="btn" style="background:#333; color:white;" onclick="location.reload()">LOGOUT ADMIN</button>
+    <div id="registrySection" style="display:none;">
+        <div class="info-box" id="guideText">
+            Karibu! Hapa ndipo unahifadhi funguo zako za siri. Hakuna mwingine anayeziona.
         </div>
-        <div id="adminRoomsList"></div>
+        <div style="background:#111; padding:15px; border-radius:12px; border:1px solid var(--gold);">
+            <h4 style="color:var(--gold); margin:0 0 10px 0;">🔑 BOX LAKO LA FUNGUO</h4>
+            <div id="keysDisplay" style="text-align:left; margin-bottom:15px;"></div>
+            
+            <input type="text" id="newRoomName" placeholder="Jina la Room (Mfn: Faisal)">
+            <button class="btn btn-green" onclick="createRoom()">GENERATE NEW ROOM</button>
+        </div>
+        <button class="btn btn-red" onclick="location.reload()">LOGOUT & LOCK</button>
     </div>
 
-    <div id="registryPage" style="display:none;">
-        <div style="text-align:left; background:#111; padding:15px; border-radius:12px; border:1px solid var(--gold);">
-            <strong style="color:var(--gold);">🗃️ ROOM REGISTRY</strong>
-            <div id="keysList" style="margin:10px 0;"></div>
-            <input type="text" id="regName" placeholder="Jina la Room Mpya">
-            <button class="btn btn-gold" onclick="createNewKey()">SAVE & GENERATE ROOM</button>
+    <div id="ownerChat" style="display:none;">
+        <h4 id="roomTitleOwner" style="color:var(--gold);"></h4>
+        <div class="msg-container" id="matrixOwner"></div>
+        <textarea id="msgOwner" placeholder="Andika ujumbe (Owner)..."></textarea>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+            <button class="btn btn-green" onclick="send('first')">SEND & SAVE</button>
+            <button class="btn btn-red" onclick="closeChat()">BACK</button>
         </div>
-        <button class="btn" style="background:var(--red); color:white" onclick="location.reload()">EXIT HUB</button>
     </div>
 
-    <div id="chatRoom" style="display:none;">
-        <h4 id="activeRoomName" style="color:var(--gold);"></h4>
-        <div class="msg-container" id="chatMatrix"></div>
-        <textarea id="msgIn" placeholder="Andika ujumbe..."></textarea>
-        <div style="display:flex; gap:10px;">
-            <button class="btn btn-green" style="flex:1" onclick="sendMsg('first')">SAY (OWNER)</button>
-            <button class="btn" style="flex:1; background:white; color:black;" onclick="sendMsg('second')">REPLY (GUEST)</button>
+    <div id="guestChat" style="display:none;">
+        <h4 id="roomTitleGuest" style="color:var(--white);"></h4>
+        <div class="msg-container" id="matrixGuest"></div>
+        <textarea id="msgGuest" placeholder="Jibu ujumbe hapa (Guest)..."></textarea>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+            <button class="btn btn-white" onclick="send('second')">REPLY GUEST</button>
+            <button class="btn btn-red" onclick="location.reload()">EXIT</button>
         </div>
-        <button class="btn" style="background:#333; color:white; width:50%;" onclick="exitChat()">BACK</button>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('junior_db') || '{"pass":"1234", "admin":"7676", "rooms":{}}');
-    let currentRoom = null;
-
-    function accessVault() {
-        const pass = document.getElementById('vaultPass').value;
-        if(pass === db.admin) {
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'block';
-            renderAdminRooms();
-        } else if(pass === db.pass) {
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('registryPage').style.display = 'block';
-            renderRegistry();
-        } else { alert("Passcode Sio Sahihi!"); }
+    let userPass = "";
+    let currentCode = "";
+    
+    // 1. Kufungua Vault Binafsi
+    function openVault() {
+        userPass = document.getElementById('masterKey').value;
+        if(!userPass) return alert("Weka Passcode!");
+        
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('registrySection').style.display = 'block';
+        renderKeys();
     }
 
-    function renderAdminRooms() {
-        const list = document.getElementById('adminRoomsList');
-        list.innerHTML = "<h5 style='color:var(--gold)'>ALL ACTIVE ROOMS:</h5>";
-        for(let code in db.rooms) {
-            list.innerHTML += `
-                <div style="padding:10px; background:#1a1a1a; margin-bottom:5px; border-radius:5px; border:1px solid var(--red); text-align:left;">
-                    <b style="color:var(--gold)">${db.rooms[code].name}</b> (${code})<br>
-                    <small>Messages: ${db.rooms[code].chats.length}</small>
-                    <button onclick="openChat('${code}')" style="background:none; border:none; color:var(--green); cursor:pointer; float:right;">VIEW</button>
-                </div>`;
-        }
-    }
-
-    function downloadBackup() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", "JUNIOR_HUB_BACKUP_" + new Date().toLocaleDateString() + ".json");
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
-    }
-
-    function createNewKey() {
-        const name = document.getElementById('regName').value;
+    // 2. Kutengeneza Room (Inajihifadhi chini ya Password ya mtumiaji)
+    function createRoom() {
+        const name = document.getElementById('newRoomName').value;
         if(!name) return;
+        
         const code = 'T-Junior/' + Math.random().toString(36).substr(2, 6).toUpperCase();
-        db.rooms[code] = { name: name, chats: [] };
-        save(); renderRegistry();
-        document.getElementById('regName').value = "";
+        let allData = JSON.parse(localStorage.getItem('j_hub_vault') || '{}');
+        
+        // Tunahifadhi kwa kupanga kulingana na Password
+        if(!allData[userPass]) allData[userPass] = { rooms: {} };
+        allData[userPass].rooms[code] = { name: name, chats: [] };
+        
+        localStorage.setItem('j_hub_vault', JSON.stringify(allData));
+        document.getElementById('newRoomName').value = "";
+        
+        alert("Room imetengenezwa!\nKODI: " + code + "\nMtumie rafiki yako kodi hii.");
+        renderKeys();
     }
 
-    function renderRegistry() {
-        const list = document.getElementById('keysList');
-        list.innerHTML = "";
-        for(let code in db.rooms) {
-            list.innerHTML += `<div style="padding:10px; background:#1a1a1a; margin-bottom:5px; border-radius:5px; border-left:3px solid var(--gold)" onclick="openChat('${code}')">
-                <b>${db.rooms[code].name}</b> <br> <small>${code}</small></div>`;
+    // 3. Kuonyesha funguo za mtumiaji HUYU tu
+    function renderKeys() {
+        const display = document.getElementById('keysDisplay');
+        let allData = JSON.parse(localStorage.getItem('j_hub_vault') || '{}');
+        display.innerHTML = "";
+        
+        if(allData[userPass] && allData[userPass].rooms) {
+            for(let code in allData[userPass].rooms) {
+                display.innerHTML += `
+                    <div style="padding:10px; background:#1a1a1a; margin-bottom:8px; border-radius:8px; border-left:4px solid var(--gold); display:flex; justify-content:space-between; align-items:center;">
+                        <div><b>${allData[userPass].rooms[code].name}</b><br><small>${code}</small></div>
+                        <button class="btn btn-green" style="width:auto; padding:5px 10px;" onclick="openOwnerChat('${code}')">OPEN</button>
+                    </div>`;
+            }
+        } else {
+            display.innerHTML = "<p style='font-size:0.7rem; color:#666;'>Sanduku lako la funguo ni tupu.</p>";
         }
     }
 
-    function openChat(code) {
-        currentRoom = code;
-        document.getElementById('registryPage').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'none';
-        document.getElementById('chatRoom').style.display = 'block';
-        document.getElementById('activeRoomName').innerText = "VAULT: " + db.rooms[code].name;
-        loadMessages();
+    // 4. Kuingia kama Owner
+    function openOwnerChat(code) {
+        currentCode = code;
+        document.getElementById('registrySection').style.display = 'none';
+        document.getElementById('ownerChat').style.display = 'block';
+        document.getElementById('roomTitleOwner').innerText = "OWNER VAULT: " + code;
+        loadMessages('matrixOwner');
     }
 
-    function loadMessages() {
-        const box = document.getElementById('chatMatrix');
-        box.innerHTML = db.rooms[currentRoom].chats.map((c, i) => `
-            <div class="${c.user === 'first' ? 'first-user-msg' : 'second-user-msg'}">
-                <div style="font-size:0.85rem">${c.text}</div>
-                <small style="font-size:0.6rem; color:var(--red); cursor:pointer;" onclick="deleteMsg(${i})">Futa</small>
-            </div>`).join('');
-        box.scrollTop = box.scrollHeight;
+    // 5. Kuingia kama Guest (Mtu mwingine mwenye kodi)
+    // Hapa Admin anaweza kuongeza kitufe cha 'Join as Guest' mwanzo
+    function loadMessages(containerId) {
+        let allData = JSON.parse(localStorage.getItem('j_hub_vault') || '{}');
+        let roomData = null;
+        
+        // Tafuta room kwenye database nzima kwa kutumia kodi
+        for(let pass in allData) {
+            if(allData[pass].rooms[currentCode]) roomData = allData[pass].rooms[currentCode];
+        }
+
+        if(roomData) {
+            const box = document.getElementById(containerId);
+            box.innerHTML = roomData.chats.map(c => `
+                <div class="${c.u === 'first' ? 'owner-msg' : 'guest-msg'}">
+                    ${c.t}
+                </div>`).join('');
+            box.scrollTop = box.scrollHeight;
+        }
     }
 
-    function sendMsg(userType) {
-        const text = document.getElementById('msgIn').value;
+    function send(userType) {
+        const inputId = userType === 'first' ? 'msgOwner' : 'msgGuest';
+        const containerId = userType === 'first' ? 'matrixOwner' : 'matrixGuest';
+        const text = document.getElementById(inputId).value;
         if(!text) return;
-        db.rooms[currentRoom].chats.push({ text: text, user: userType, time: Date.now() });
-        save(); document.getElementById('msgIn').value = ""; loadMessages();
+
+        let allData = JSON.parse(localStorage.getItem('j_hub_vault') || '{}');
+        for(let pass in allData) {
+            if(allData[pass].rooms[currentCode]) {
+                allData[pass].rooms[currentCode].chats.push({ t: text, u: userType });
+            }
+        }
+        localStorage.setItem('j_hub_vault', JSON.stringify(allData));
+        document.getElementById(inputId).value = "";
+        loadMessages(containerId);
     }
 
-    function deleteMsg(index) {
-        db.rooms[currentRoom].chats.splice(index, 1);
-        save(); loadMessages();
+    function closeChat() {
+        document.getElementById('ownerChat').style.display = 'none';
+        document.getElementById('registrySection').style.display = 'block';
     }
-
-    function save() { localStorage.setItem('junior_db', JSON.stringify(db)); }
-    function exitChat() { location.reload(); }
 </script>
 </body>
 </html>
