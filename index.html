@@ -9,175 +9,146 @@
         * { font-family: 'Courier New', monospace; box-sizing: border-box; }
         body { background: var(--bg); color: #fff; margin: 0; padding: 10px; }
         
-        .main-container { max-width: 450px; margin: auto; border: 2px solid var(--gold); border-radius: 25px; padding: 20px; min-height: 95vh; background: #000; }
-        
-        /* Saa ya Milisec */
-        #chronos { font-size: 0.7rem; color: var(--gold); text-align: center; border: 1px solid #222; padding: 8px; border-radius: 10px; margin-bottom: 15px; display: none; }
-        
-        /* Chat Design */
-        .matrix-display { height: 420px; overflow-y: auto; display: flex; flex-direction: column; background: #050505; padding: 10px; border-radius: 15px; border: 1px solid #222; margin-bottom: 10px; }
-        .bubble { padding: 12px; border-radius: 15px; margin: 8px 0; max-width: 85%; color: #000; font-weight: bold; font-family: sans-serif; }
+        .main-container { max-width: 450px; margin: auto; border: 2px solid var(--gold); border-radius: 25px; padding: 15px; min-height: 95vh; background: #000; }
+        #sessionTime { color: var(--gold); text-align: center; font-size: 0.8rem; margin-bottom: 10px; border-bottom: 1px solid #222; padding-bottom: 5px; }
+
+        .chat-box { height: 450px; overflow-y: auto; display: flex; flex-direction: column; background: #050505; padding: 10px; border-radius: 15px; border: 1px solid #222; }
+        .bubble { padding: 10px; border-radius: 12px; margin: 5px 0; max-width: 85%; color: #000; font-weight: bold; position: relative; cursor: pointer; }
         .owner { align-self: flex-end; background: #fff; border-radius: 15px 15px 2px 15px; } 
         .guest { align-self: flex-start; background: #e2e2e2; border-radius: 15px 15px 15px 2px; }
         
-        .sender-tag { font-size: 0.6rem; display: block; margin-bottom: 3px; color: #666; text-transform: uppercase; }
-        .time-tag { font-size: 0.5rem; opacity: 0.6; text-align: right; margin-top: 4px; }
+        .msg-meta { font-size: 0.6rem; color: #666; display: flex; justify-content: space-between; margin-top: 5px; }
+        .btn-action { font-size: 0.55rem; color: red; text-decoration: underline; background: none; border: none; cursor: pointer; padding: 0 5px; }
 
-        input, textarea { width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 12px; margin-bottom: 10px; outline: none; }
-        .btn { padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; }
-        .btn-gold { background: var(--gold); color: #000; margin-bottom: 15px; }
-        .btn-dark { background: #222; color: var(--gold); font-size: 0.75rem; }
-        .btn-red { background: #ff3333; color: #fff; width: auto; padding: 5px 15px; }
-
-        .tools { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        img { width: 100%; border-radius: 10px; margin-top: 5px; }
+        input, textarea { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 10px; margin-bottom: 10px; }
+        .btn { padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; }
+        .btn-gold { background: var(--gold); color: #000; margin-top: 5px; }
+        .tool-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        img { width: 100%; border-radius: 8px; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div class="main-container">
-    <h2 style="text-align:center; color:var(--gold);">JUNIOR PRIVATE HUB 🛡️</h2>
-    <div id="chronos"></div>
+    <h3 style="text-align:center; color:var(--gold); margin:5px;">JUNIOR PRIVATE HUB 🛡️</h3>
+    <div id="sessionTime"></div>
 
-    <div id="loginGate">
-        <p style="text-align:center; font-size:0.75rem; color:#888;">ENTER INFORMATION ACCORDING TO ROOM</p>
-        <input type="text" id="userAlias" placeholder="Your Name (Example: JUNIOR)">
-        <input type="password" id="roomPasscode" placeholder="Enter Room Password">
-        <button class="btn btn-gold" onclick="attemptLogin()">OPEN THE SYSTEM</button>
-        
-        <button class="btn btn-dark" onclick="triggerSetup()">MAKE A NEW ROOM (1234)</button>
+    <div id="gate">
+        <input type="text" id="alias" placeholder="Jina Lako">
+        <input type="password" id="pass" placeholder="Password ya Chumba">
+        <button class="btn btn-gold" onclick="login()">OPEN SYSTEM</button>
+        <button class="btn" style="background:#222; color:var(--gold); margin-top:10px;" onclick="setup()">NEW ROOM (1234)</button>
     </div>
 
-    <div id="setupGate" style="display:none;">
-        <p style="text-align:center; color:var(--gold);">[ NEW ROOM AUTHORIZATION ]</p>
-        <input type="text" id="newRoomID" placeholder="Assign Room Name (Identity)">
-        <input type="password" id="newRoomKey" placeholder="Set Room Password">
-        <button class="btn btn-gold" onclick="finalizeRoom()">SAVE & GENERATE ROOM</button>
-        <button class="btn btn-dark" onclick="location.reload()">CANCEL</button>
-    </div>
-
-    <div id="hubCore" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <span id="roomStatus" style="color:var(--gold); font-size:0.8rem; font-weight:bold;"></span>
-            <button class="btn btn-red" onclick="location.reload()">EXIT</button>
+    <div id="hub" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span id="roomTitle" style="color:var(--gold); font-weight:bold;"></span>
+            <button onclick="location.reload()" style="background:red; color:white; border:none; padding:4px 10px; border-radius:5px;">EXIT</button>
         </div>
         
-        <div class="matrix-display" id="chatScreen"></div>
+        <div class="chat-box" id="display"></div>
         
-        <div class="tools">
-            <button class="btn btn-dark" onclick="document.getElementById('pic').click()">📷 PICHA</button>
-            <button class="btn btn-dark" onclick="sendGPS()">📍 MAPS</button>
+        <div class="tool-bar">
+            <button class="btn" style="background:#333; color:white;" onclick="document.getElementById('fileIn').click()">📷 PICHA</button>
+            <button class="btn" style="background:#333; color:white;" onclick="sendGPS()">📍 MAPS</button>
         </div>
         
-        <input type="file" id="pic" style="display:none" accept="image/*" onchange="uploadPic(this)">
-        <textarea id="textIn" placeholder="Andika ujumbe hapa..."></textarea>
-        <button class="btn btn-gold" onclick="pushData()">TUMA UJUMBE</button>
+        <input type="file" id="fileIn" style="display:none" accept="image/*" onchange="upload(this)">
+        <textarea id="input" placeholder="Andika ujumbe..."></textarea>
+        <button class="btn btn-gold" onclick="send()">TUMA UJUMBE</button>
     </div>
 </div>
 
 <script>
-    let storage = JSON.parse(localStorage.getItem('JUNIOR_PRO_HUB_V9') || '{"sectors":{}}');
-    let currentKey = "";
-    let currentName = "";
+    let db = JSON.parse(localStorage.getItem('JUNIOR_HUB_V10') || '{"rooms":{}}');
+    let activeKey = "", myName = "";
 
-    // 1. Trigger Setup kwa 1234
-    function triggerSetup() {
-        let code = prompt("Ingiza 1234 kwanza!");
-        if(code === "1234") {
-            document.getElementById('loginGate').style.display = 'none';
-            document.getElementById('setupGate').style.display = 'block';
-        } else { alert("Code siyo sahihi!"); }
+    function login() {
+        myName = document.getElementById('alias').value;
+        activeKey = document.getElementById('pass').value;
+        if(db.rooms[activeKey]) {
+            document.getElementById('gate').style.display = 'none';
+            document.getElementById('hub').style.display = 'block';
+            document.getElementById('roomTitle').innerText = "ROOM: " + db.rooms[activeKey].name;
+            updateClock(); setInterval(updateClock, 1000);
+            render();
+        } else { alert("Kosa! Chumba hakipo."); }
     }
 
-    // 2. Hifadhi Chumba Kipya
-    function finalizeRoom() {
-        const name = document.getElementById('newRoomID').value;
-        const key = document.getElementById('newRoomKey').value;
-        if(name && key) {
-            storage.sectors[key] = { name: name, logs: [], lastIn: Date.now() };
-            localStorage.setItem('JUNIOR_PRO_HUB_V9', JSON.stringify(storage));
-            alert("Chumba cha " + name + " kimeundwa!");
-            location.reload();
+    function setup() {
+        if(prompt("Ingiza Master Code:") === "1234") {
+            let n = prompt("Jina la Chumba:");
+            let p = prompt("Weka Password:");
+            if(n && p) {
+                db.rooms[p] = { name: n, msgs: [] };
+                save(); alert("Tayari!");
+            }
         }
     }
 
-    // 3. Jaribu Kuingia
-    function attemptLogin() {
-        currentName = document.getElementById('userAlias').value;
-        currentKey = document.getElementById('roomPasscode').value;
-        
-        if(storage.sectors[currentKey]) {
-            // Check expiry ya siku 5
-            const s5 = 5 * 24 * 60 * 60 * 1000;
-            if(Date.now() - storage.sectors[currentKey].lastIn > s5) {
-                delete storage.sectors[currentKey];
-                localStorage.setItem('JUNIOR_PRO_HUB_V9', JSON.stringify(storage));
-                return alert("Chumba kimefutika kwa kutotumika siku 5!");
-            }
-            
-            launchHub();
-        } else { alert("Chumba hakipo! Hakikisha Password ni sahihi."); }
-    }
-
-    // 4. Fungua Chumba
-    function launchHub() {
-        document.getElementById('loginGate').style.display = 'none';
-        document.getElementById('hubCore').style.display = 'block';
-        document.getElementById('chronos').style.display = 'block';
-        document.getElementById('roomStatus').innerText = "ROOM: " + storage.sectors[currentKey].name;
-        
-        setInterval(() => {
-            const n = new Date();
-            document.getElementById('chronos').innerText = `[ SESSION ] ${n.toLocaleDateString()} | ${n.getHours()}:${n.getMinutes()}:${n.getSeconds()}:${n.getMilliseconds()}`;
-        }, 1);
-        
-        storage.sectors[currentKey].lastIn = Date.now();
-        localStorage.setItem('JUNIOR_PRO_HUB_V9', JSON.stringify(storage));
-        render();
+    function updateClock() {
+        let d = new Date();
+        document.getElementById('sessionTime').innerText = `[ SESSION ] ${d.toLocaleDateString()} | ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
     }
 
     function render() {
-        const screen = document.getElementById('chatScreen');
-        const rName = storage.sectors[currentKey].name.toUpperCase();
-        screen.innerHTML = storage.sectors[currentKey].logs.map(l => {
-            const isOwner = l.u.toUpperCase() === rName;
-            return `<div class="bubble ${isOwner ? 'owner' : 'guest'}">
-                        <span class="sender-tag">${l.u}</span>
-                        ${l.t}
-                        <div class="time-tag">${l.tm}</div>
+        const div = document.getElementById('display');
+        const rName = db.rooms[activeKey].name.toUpperCase();
+        div.innerHTML = db.rooms[activeKey].msgs.map((m, i) => {
+            let isMe = m.u.toUpperCase() === rName;
+            return `<div class="bubble ${isMe ? 'owner' : 'guest'}" onclick="copyMsg('${m.t}')">
+                        <span style="font-size:0.6rem; color:#888;">${m.u}</span><br>
+                        ${m.t}
+                        <div class="msg-meta">
+                            <span>${m.tm}</span>
+                            <span>
+                                <button class="btn-action" onclick="editMsg(${i})">EDIT</button>
+                                <button class="btn-action" onclick="delMsg(${i})">DEL</button>
+                            </span>
+                        </div>
                     </div>`;
         }).join('');
-        screen.scrollTop = screen.scrollHeight;
+        div.scrollTop = div.scrollHeight;
     }
 
-    function pushData() {
-        const val = document.getElementById('textIn').value;
-        if(!val) return;
-        storage.sectors[currentKey].logs.push({ u: currentName, t: val, tm: new Date().toLocaleTimeString() });
-        localStorage.setItem('JUNIOR_PRO_HUB_V9', JSON.stringify(storage));
-        render(); document.getElementById('textIn').value = "";
+    function send() {
+        let txt = document.getElementById('input').value;
+        if(!txt) return;
+        db.rooms[activeKey].msgs.push({ u: myName, t: txt, tm: new Date().toLocaleTimeString() });
+        save(); render(); document.getElementById('input').value = "";
     }
 
-    function uploadPic(input) {
-        if(input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                storage.sectors[currentKey].logs.push({ u: currentName, t: `<img src="${e.target.result}">`, tm: new Date().toLocaleTimeString() });
-                localStorage.setItem('JUNIOR_PRO_HUB_V9', JSON.stringify(storage));
-                render();
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
+    function delMsg(i) { if(confirm("Futa ujumbe?")) { db.rooms[activeKey].msgs.splice(i,1); save(); render(); } }
+    
+    function editMsg(i) {
+        let old = db.rooms[activeKey].msgs[i].t;
+        let n = prompt("Hariri ujumbe:", old);
+        if(n) { db.rooms[activeKey].msgs[i].t = n + " (Edited)"; save(); render(); }
+    }
+
+    function copyMsg(t) {
+        navigator.clipboard.writeText(t);
+        alert("Ujumbe umenakiliwa!");
+    }
+
+    function upload(el) {
+        let r = new FileReader();
+        r.onload = (e) => {
+            db.rooms[activeKey].msgs.push({ u: myName, t: `<img src="${e.target.result}">`, tm: new Date().toLocaleTimeString() });
+            save(); render();
+        };
+        r.readAsDataURL(el.files[0]);
     }
 
     function sendGPS() {
         navigator.geolocation.getCurrentPosition(p => {
-            const url = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
-            storage.sectors[currentKey].logs.push({ u: currentName, t: `📍 Location: <a href="${url}" target="_blank" style="color:blue;">View on Maps</a>`, tm: new Date().toLocaleTimeString() });
-            localStorage.setItem('JUNIOR_PRO_HUB_V9', JSON.stringify(storage));
-            render();
+            let link = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
+            db.rooms[activeKey].msgs.push({ u: myName, t: `📍 <a href="${link}" target="_blank">Location Yangu</a>`, tm: new Date().toLocaleTimeString() });
+            save(); render();
         });
     }
+
+    function save() { localStorage.setItem('JUNIOR_HUB_V10', JSON.stringify(db)); }
 </script>
 </body>
 </html>
