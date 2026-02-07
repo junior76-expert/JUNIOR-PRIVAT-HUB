@@ -8,39 +8,53 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-classic.js"></script>
 
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f0f2f5; text-align: center; padding: 20px; }
-        .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }
-        input { width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-        button { padding: 10px 20px; border: none; background-color: #007bff; color: white; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        button:hover { opacity: 0.8; }
-        #chat-box { height: 350px; border: 1px solid #ddd; margin-top: 20px; overflow-y: scroll; padding: 10px; text-align: left; background: #fafafa; border-radius: 5px; display: flex; flex-direction: column; }
-        .msg { margin-bottom: 10px; padding: 8px; border-radius: 8px; background: #e1ffc7; width: fit-content; max-width: 85%; }
-        .my-msg { align-self: flex-end; background: #d1e7ff; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { width: 90%; max-width: 400px; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
+        h2 { color: #128c7e; margin-bottom: 10px; }
+        p { color: #666; font-size: 14px; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; outline: none; }
+        button { width: 100%; padding: 12px; margin-top: 15px; border: none; background: #007bff; color: white; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        .room-info { background: #e8f4fd; padding: 10px; border-radius: 10px; margin-bottom: 15px; color: #0056b3; font-weight: bold; }
+        #chat-box { height: 350px; border: 1px solid #eee; margin-top: 15px; overflow-y: auto; padding: 10px; text-align: left; background: #f9f9f9; border-radius: 10px; display: flex; flex-direction: column; }
+        .msg { margin-bottom: 10px; padding: 10px; border-radius: 10px; max-width: 80%; font-size: 14px; }
+        .my-msg { background: #dcf8c6; align-self: flex-end; }
+        .other-msg { background: #fff; align-self: flex-start; border: 1px solid #ddd; }
+        .user-label { font-size: 10px; font-weight: bold; display: block; margin-bottom: 3px; color: #075e54; }
     </style>
 </head>
 <body>
 
 <div class="container" id="login-screen">
     <h2>Junior Private Hub</h2>
-    <input type="text" id="username" placeholder="Jina lako">
-    <input type="password" id="room-pass" placeholder="Password ya Chumba">
-    <br>
-    <button onclick="joinRoom()">Ingia Chumbani</button>
+    <p>Ingiza password ya chumba ulichopewa au tengeneza chumba chako kipya.</p>
+    
+    <input type="text" id="username" placeholder="Jina lako (Mf: Junior)">
+    <input type="password" id="room-pass" placeholder="Password ya Chumba (Mf: 1234)">
+    
+    <button onclick="joinRoom()">INGIA CHUMBANI</button>
+    <div style="margin-top: 15px; font-size: 12px; color: #888;">
+        Kumbuka: Mgeni na Mwenye chumba wanatumia password moja.
+    </div>
 </div>
 
 <div class="container" id="chat-screen" style="display:none;">
-    <h3 id="room-title" style="color: #007bff;"></h3>
+    <div class="room-info" id="room-display"></div>
     <div id="chat-box"></div>
-    <input type="text" id="message" placeholder="Andika meseji..." onkeypress="handleKey(event)">
-    <br>
-    <button onclick="sendMessage()">Tuma</button>
-    <button onclick="sendLocation()" style="background-color: #28a745;">Tuma GPS</button>
-    <br><br>
-    <button onclick="location.reload()" style="background-color: #dc3545; font-size: 11px;">Ondoka</button>
+    
+    <div style="display: flex; gap: 5px; margin-top: 10px;">
+        <input type="text" id="message" placeholder="Andika meseji..." style="margin: 0;">
+        <button onclick="sendMessage()" style="width: auto; margin: 0; padding: 0 20px;">Tuma</button>
+    </div>
+    
+    <button onclick="sendLocation()" style="background: #28a745; margin-top: 10px;">📍 Tuma Location</button>
+    <button onclick="location.reload()" style="background: #dc3545; font-size: 12px; padding: 5px; width: 80px; margin-top: 15px;">Ondoka</button>
 </div>
 
+<audio id="ding" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"></audio>
+
 <script>
-    // 1. Firebase Configuration yako
+    // Config kutoka kwenye picha yako (1000383690.jpg)
     const firebaseConfig = {
         apiKey: "AIzaSyBY_Tgf5XhAfAR7sgE7SVPYSU1QjkWvh6Y",
         authDomain: "privet-house--room.firebaseapp.com",
@@ -52,10 +66,8 @@
         measurementId: "G-870NBRCPDR"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
-
     let currentRoom = "";
     let user = "";
 
@@ -64,65 +76,61 @@
         currentRoom = document.getElementById("room-pass").value.trim();
 
         if (user === "" || currentRoom === "") {
-            alert("Tafadhali jaza jina na password!");
+            alert("Tafadhali jaza Jina na Password!");
             return;
         }
 
         document.getElementById("login-screen").style.display = "none";
         document.getElementById("chat-screen").style.display = "block";
-        document.getElementById("room-title").innerText = "Chumba: " + currentRoom;
+        document.getElementById("room-display").innerText = "🔐 CHUMBA: " + currentRoom;
 
+        // Anza kusikiliza meseji
         database.ref("rooms/" + currentRoom).on("child_added", (snapshot) => {
             const data = snapshot.val();
             const chatBox = document.getElementById("chat-box");
             const div = document.createElement("div");
             div.classList.add("msg");
-            if (data.user === user) div.classList.add("my-msg");
             
-            if (data.msg.includes("maps.google.com")) {
-                div.innerHTML = `<b>${data.user}:</b> <a href="${data.msg}" target="_blank">📍 Fungua Ramani</a>`;
+            if (data.user === user) {
+                div.classList.add("my-msg");
             } else {
-                div.innerHTML = `<b>${data.user}:</b> ${data.msg}`;
+                div.classList.add("other-msg");
+                document.getElementById("ding").play().catch(() => {});
             }
-            
+
+            if (data.msg.includes("maps.google.com")) {
+                div.innerHTML = `<span class="user-label">${data.user}</span><a href="${data.msg}" target="_blank" style="color: blue; font-weight: bold;">📍 Fungua Ramani</a>`;
+            } else {
+                div.innerHTML = `<span class="user-label">${data.user}</span>${data.msg}`;
+            }
+
             chatBox.appendChild(div);
             chatBox.scrollTop = chatBox.scrollHeight;
         });
     }
 
     function sendMessage() {
-        const msgInput = document.getElementById("message");
-        const msg = msgInput.value.trim();
+        const input = document.getElementById("message");
+        const msg = input.value.trim();
         if (msg !== "") {
             database.ref("rooms/" + currentRoom).push({
                 user: user,
                 msg: msg
             });
-            msgInput.value = "";
+            input.value = "";
         }
-    }
-
-    function handleKey(e) {
-        if (e.key === "Enter") sendMessage();
     }
 
     function sendLocation() {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((p) => {
-                // Link imerekebishwa kikamilifu hapa
-                let link = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
-                database.ref("rooms/" + currentRoom).push({
-                    user: user,
-                    msg: link
-                });
-            }, () => {
-                alert("Tafadhali ruhusu GPS kwenye simu/browser yako!");
-            });
-        } else {
-            alert("Kifaa chako hakikubali GPS");
+            navigator.geolocation.getCurrentPosition((pos) => {
+                const link = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                database.ref("rooms/" + currentRoom).push({ user: user, msg: link });
+            }, () => alert("Washa GPS!"));
         }
     }
 </script>
 
 </body>
 </html>
+ 
