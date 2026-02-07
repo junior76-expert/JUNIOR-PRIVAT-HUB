@@ -3,65 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JUNIOR PRIVATE HUB - MASTER</title>
+    <title>JUNIOR PRIVATE HUB - AUTO SYSTEM</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-classic.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-classic.js"></script>
 
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f0f2f5; margin: 0; display: flex; flex-direction: column; height: 100vh; }
-        #login-screen { flex: 1; display: flex; align-items: center; justify-content: center; background: white; }
-        .login-card { background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 85%; max-width: 400px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; outline: none; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; background: #007bff; color: white; font-size: 16px; transition: 0.3s; }
-        button:hover { background: #0056b3; }
+        body { font-family: 'Segoe UI', sans-serif; background: #e5ddd5; margin: 0; height: 100vh; display: flex; flex-direction: column; }
+        .login-container { flex: 1; display: flex; align-items: center; justify-content: center; background: #f0f2f5; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 85%; max-width: 400px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; background: #075e54; color: white; margin-top: 10px; }
 
-        #chat-screen { display: none; flex-direction: column; height: 100vh; background: #e5ddd5; }
-        .header { background: #075e54; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-        #chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        #chat-screen { display: none; flex-direction: column; height: 100vh; }
+        .header { background: #075e54; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        #chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; background: #efe7dd; }
         
-        .msg { padding: 10px; border-radius: 12px; max-width: 80%; position: relative; font-size: 15px; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .my-msg { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .other-msg { background: #fff; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .del-btn { position: absolute; top: 2px; right: 5px; color: red; font-size: 10px; cursor: pointer; font-weight: bold; }
-        
-        .input-bar { background: #f0f0f0; padding: 10px; display: flex; align-items: center; gap: 8px; }
-        #message-input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ddd; outline: none; }
-        .icon-btn { font-size: 22px; cursor: pointer; background: none; border: none; color: #555; }
-        
-        img, video { max-width: 100%; border-radius: 10px; margin-top: 5px; cursor: pointer; }
-        audio { width: 100%; margin-top: 5px; }
+        .msg { padding: 10px; border-radius: 12px; max-width: 80%; position: relative; font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .my-msg { background: #dcf8c6; align-self: flex-end; }
+        .other-msg { background: #fff; align-self: flex-start; }
+        .del { color: red; font-size: 12px; cursor: pointer; float: right; margin-left: 10px; font-weight: bold; }
+
+        .footer { background: #f0f0f0; padding: 10px; display: flex; align-items: center; gap: 8px; }
+        #input-msg { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
+        .icon { cursor: pointer; font-size: 20px; }
+        img { max-width: 100%; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-<div id="login-screen">
-    <div class="login-card">
-        <h2 style="color: #075e54; margin-bottom: 5px;">Junior Private Hub</h2>
-        <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Weka password ya chumba chako siri.</p>
+<div id="login-screen" class="login-container">
+    <div class="card">
+        <h2 style="color: #075e54;">Junior Private Hub</h2>
+        <p style="font-size: 12px; color: #666;">Ingiza Jina na Password (ya mgeni au mpya)</p>
         <input type="text" id="username" placeholder="Jina lako">
         <input type="password" id="room-pass" placeholder="Password ya Chumba">
-        <button onclick="joinRoom()">INGIA CHUMBANI</button>
+        <button onclick="joinRoom()">INGIA / TENGENEZA CHUMBA</button>
+        <p style="font-size: 10px; color: red; margin-top: 15px;">*Vyumba hujifuta vyenyewe baada ya siku 30*</p>
     </div>
 </div>
 
 <div id="chat-screen">
     <div class="header">
-        <span id="display-room">Chumba</span>
-        <button onclick="clearAllChat()" style="width: auto; background: #dc3545; font-size: 11px; padding: 5px 10px;">Futa Chat Zote</button>
+        <span id="active-room">Chumba</span>
+        <button onclick="location.reload()" style="width: auto; background: #555; font-size: 10px;">ONDOKA</button>
     </div>
-    
     <div id="chat-box"></div>
-
-    <div class="input-bar">
-        <label class="icon-btn" title="Tuma Picha">📷<input type="file" id="media-input" accept="image/*" style="display:none" onchange="sendMedia(this)"></label>
-        <input type="text" id="message-input" placeholder="Andika meseji...">
-        <button class="icon-btn" style="color: #075e54;" onclick="sendText()">➤</button>
-        <button id="voice-btn" class="icon-btn" onmousedown="startVoice()" onmouseup="stopVoice()" ontouchstart="startVoice()" ontouchend="stopVoice()">🎤</button>
+    <div class="footer">
+        <label class="icon">📷<input type="file" id="img-in" style="display:none" onchange="sendImg(this)"></label>
+        <input type="text" id="input-msg" placeholder="Andika kitu...">
+        <button onclick="sendTxt()" style="width: auto; padding: 8px 15px;">➤</button>
+        <button id="v-btn" onmousedown="startV()" onmouseup="stopV()" style="width: auto; background: #25d366;">🎤</button>
     </div>
 </div>
 
 <script>
-    // --- FIREBASE CONFIG (Kutoka picha zako) ---
+    // Config yako ya Firebase (Kutoka picha zako)
     const firebaseConfig = {
         apiKey: "AIzaSyBY_Tgf5XhAfAR7sgE7SVPYSU1QjkWvh6Y",
         authDomain: "privet-house--room.firebaseapp.com",
@@ -79,90 +75,104 @@
     function joinRoom() {
         user = document.getElementById("username").value.trim();
         room = document.getElementById("room-pass").value.trim();
-        if(!user || !room) return alert("Jaza jina na password!");
+        if(!user || !room) return alert("Jaza kila kitu!");
+
+        // 1. Sasisha muda wa mwisho wa chumba (kuzuia kisifutike)
+        const now = new Date().getTime();
+        db.ref("room_metadata/" + room).set({ last_active: now });
 
         document.getElementById("login-screen").style.display = "none";
         document.getElementById("chat-screen").style.display = "flex";
-        document.getElementById("display-room").innerText = "🔐 Chumba: " + room;
+        document.getElementById("active-room").innerText = "🔐 Hub: " + room;
 
-        // Sikiliza meseji Live kutoka Database (Bila Storage)
+        // 2. Safisha vyumba vya zamani (Auto-delete logic)
+        cleanupOldRooms();
+
+        // 3. Sikiliza meseji
         db.ref("rooms/" + room).on("value", (snap) => {
             const box = document.getElementById("chat-box");
             box.innerHTML = "";
             snap.forEach((child) => {
-                const data = child.val();
-                renderMessage(child.key, data);
+                render(child.key, child.val());
             });
             box.scrollTop = box.scrollHeight;
         });
     }
 
-    function renderMessage(id, data) {
+    function cleanupOldRooms() {
+        const thirtyDays = 30 * 24 * 60 * 60 * 1000; // Siku 30 kwa milliseconds
+        const now = new Date().getTime();
+
+        db.ref("room_metadata").once("value", (snap) => {
+            snap.forEach((child) => {
+                const lastActive = child.val().last_active;
+                if (now - lastActive > thirtyDays) {
+                    // Futa chumba na meseji zake
+                    db.ref("rooms/" + child.key).remove();
+                    db.ref("room_metadata/" + child.key).remove();
+                }
+            });
+        });
+    }
+
+    function render(id, data) {
         const box = document.getElementById("chat-box");
         const div = document.createElement("div");
         div.className = `msg ${data.user === user ? 'my-msg' : 'other-msg'}`;
+        let html = `<span class="del" onclick="deleteMsg('${id}')">x</span><b>${data.user}</b><br>`;
         
-        let html = `<span class="del-btn" onclick="deleteMessage('${id}')">x</span>`;
-        html += `<small style="font-weight:bold; color:#075e54; display:block;">${data.user}</small>`;
-
         if(data.type === "text") html += `<span>${data.content}</span>`;
-        if(data.type === "img") html += `<img src="${data.content}" onclick="window.open(this.src)">`;
-        if(data.type === "aud") html += `<audio controls src="${data.content}"></audio>`;
-
+        if(data.type === "img") html += `<img src="${data.content}">`;
+        if(data.type === "aud") html += `<audio controls src="${data.content}" style="width:100%"></audio>`;
+        
         div.innerHTML = html;
         box.appendChild(div);
     }
 
-    function sendText() {
-        const inp = document.getElementById("message-input");
-        if(inp.value.trim()) {
+    function sendTxt() {
+        const inp = document.getElementById("input-msg");
+        if(inp.value) {
             db.ref("rooms/" + room).push({ user: user, content: inp.value, type: "text" });
+            db.ref("room_metadata/" + room).update({ last_active: new Date().getTime() });
             inp.value = "";
         }
     }
 
-    // MBINU YA BASE64: Inahifadhi picha kwenye Database moja kwa moja (BURE)
-    function sendMedia(input) {
+    function sendImg(input) {
         const file = input.files[0];
-        if(!file) return;
         const reader = new FileReader();
-        reader.onload = function(e) {
-            db.ref("rooms/" + room).push({ user: user, content: e.target.result, type: "img" });
-        };
+        reader.onloadend = () => {
+            db.ref("rooms/" + room).push({ user: user, content: reader.result, type: "img" });
+        }
         reader.readAsDataURL(file);
     }
 
-    // VOICE MESSAGE: Inahifadhi sauti kwenye Database (BURE)
-    function startVoice() {
-        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-            recorder = new MediaRecorder(stream);
+    function startV() {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(s => {
+            recorder = new MediaRecorder(s);
             recorder.start();
             chunks = [];
             recorder.ondataavailable = e => chunks.push(e.data);
-            document.getElementById("voice-btn").style.color = "red";
+            document.getElementById("v-btn").innerText = "🔴";
         });
     }
 
-    function stopVoice() {
+    function stopV() {
         if(!recorder) return;
         recorder.stop();
-        document.getElementById("voice-btn").style.color = "#555";
+        document.getElementById("v-btn").innerText = "🎤";
         recorder.onstop = () => {
-            const blob = new Blob(chunks, { type: 'audio/webm' });
+            const blob = new Blob(chunks, { type: "audio/webm" });
             const reader = new FileReader();
-            reader.onload = function(e) {
-                db.ref("rooms/" + room).push({ user: user, content: e.target.result, type: "aud" });
-            };
+            reader.onloadend = () => {
+                db.ref("rooms/" + room).push({ user: user, content: reader.result, type: "aud" });
+            }
             reader.readAsDataURL(blob);
         };
     }
 
-    function deleteMessage(id) {
-        if(confirm("Futa meseji hii?")) db.ref("rooms/" + room + "/" + id).remove();
-    }
-
-    function clearAllChat() {
-        if(confirm("Futa chat zote? Hii haitafuta chumba.")) db.ref("rooms/" + room).remove();
+    function deleteMsg(id) {
+        if(confirm("Futa?")) db.ref("rooms/" + room + "/" + id).remove();
     }
 </script>
 </body>
