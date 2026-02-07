@@ -3,208 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JUNIOR PRIVATE HUB v5</title>
-    <style>
-        :root { --gold: #D4AF37; --bg: #000; }
-        * { font-family: 'Courier New', monospace; box-sizing: border-box; }
-        body { background: var(--bg); color: #fff; margin: 0; padding: 10px; }
-        .main-container { max-width: 450px; margin: auto; border: 2px solid var(--gold); border-radius: 20px; padding: 15px; min-height: 95vh; background: #000; position: relative; }
-        
-        .gate-input { width: 100%; padding: 15px; background: #111; border: 1px solid #333; color: #fff; border-radius: 12px; margin-bottom: 12px; }
-        .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; background: var(--gold); color: #000; text-transform: uppercase; }
-        
-        .chat-screen { height: 420px; overflow-y: auto; display: flex; flex-direction: column; background: #050505; padding: 10px; border-radius: 15px; border: 1px solid #222; margin-top: 10px; }
-        .msg { padding: 12px; border-radius: 15px; margin: 8px 0; max-width: 85%; color: #000; font-weight: bold; position: relative; word-wrap: break-word; font-size: 0.9rem; }
-        .me { align-self: flex-end; background: #fff; border-bottom-right-radius: 2px; }
-        .them { align-self: flex-start; background: var(--gold); border-bottom-left-radius: 2px; }
-        
-        .tool-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin: 10px 0; }
-        .tool-btn { background: #222; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 10px; font-size: 0.7rem; cursor: pointer; text-align: center; }
-        .recording { background: red !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    <title>JUNIOR PRIVATE HUB</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-classic.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-classic.js"></script>
 
-        img { width: 100%; border-radius: 8px; margin-top: 5px; box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
-        audio { width: 100%; height: 35px; margin-top: 5px; }
-        textarea { width: 100%; padding: 12px; background: #111; border: 1px solid #333; color: #fff; border-radius: 10px; resize: none; height: 65px; margin-top: 5px; }
-        .del-btn { color: red; font-size: 0.6rem; cursor: pointer; font-weight: bold; }
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f2f5; text-align: center; padding: 20px; }
+        .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0px 0px 10px rgba(0,0,0,0.1); }
+        input { width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 20px; border: none; background-color: #007bff; color: white; border-radius: 5px; cursor: pointer; }
+        #chat-box { height: 300px; border: 1px solid #ddd; margin-top: 20px; overflow-y: scroll; padding: 10px; text-align: left; background: #fafafa; }
+        .msg { margin-bottom: 10px; padding: 5px; border-radius: 5px; background: #e1ffc7; }
     </style>
 </head>
 <body>
 
-<div class="main-container">
-    <h3 style="text-align:center; color:var(--gold); margin-bottom:5px;">JUNIOR PRIVATE HUB 🛡️</h3>
-    <div id="sessionTime" style="text-align:center; font-size:0.7rem; color:var(--gold); opacity:0.7;"></div>
+<div class="container" id="login-screen">
+    <h2>Junior Private Hub</h2>
+    <input type="text" id="username" placeholder="Jina lako">
+    <input type="password" id="room-pass" placeholder="Password ya Chumba">
+    <br>
+    <button onclick="joinRoom()">Ingia Chumbani</button>
+</div>
 
-    <div id="gate">
-        <p style="text-align:center; font-size:0.75rem; color:#888;">Weka Jina na Password kuanza mawasiliano</p>
-        <input type="text" id="loginName" class="gate-input" placeholder="Jina Lako (Junior/Mgeni)">
-        <input type="password" id="loginPass" class="gate-input" placeholder="Password ya Chumba">
-        <button class="btn-main" onclick="enterRoom()">FUNGUA MFUMO</button>
-        <button onclick="createRoom()" style="background:none; border:none; color:var(--gold); width:100%; margin-top:20px; cursor:pointer; font-size:0.8rem;">NEW ROOM SETUP (1234)</button>
-    </div>
-
-    <div id="hub" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:5px; border-bottom:1px solid #222;">
-            <span id="roomTitle" style="color:var(--gold); font-weight:bold; font-size:0.8rem;"></span>
-            <div>
-                <button onclick="clearAll()" style="background:#333; color:orange; border:none; padding:5px 8px; border-radius:5px; font-size:0.6rem; cursor:pointer;">CLEAR</button>
-                <button onclick="location.reload()" style="background:red; color:#fff; border:none; padding:5px 12px; border-radius:5px; font-size:0.6rem; cursor:pointer; margin-left:5px;">EXIT</button>
-            </div>
-        </div>
-
-        <div class="chat-screen" id="chatDisplay"></div>
-        
-        <div class="tool-bar">
-            <button class="tool-btn" onclick="document.getElementById('imgIn').click()">📷 PHOTO</button>
-            <button class="tool-btn" id="micBtn" onclick="toggleMic()">🎤 SOUND</button>
-            <button class="tool-btn" onclick="sendGPS()">📍 MAPS</button>
-        </div>
-        
-        <input type="file" id="imgIn" style="display:none" accept="image/*" onchange="uploadImg(this)">
-        <textarea id="msgIn" placeholder="Andika ujumbe hapa..."></textarea>
-        <button class="btn-main" style="margin-top:10px;" onclick="sendText()">SEND A MESSAGE</button>
-    </div>
+<div class="container" id="chat-screen" style="display:none;">
+    <h3 id="room-title"></h3>
+    <div id="chat-box"></div>
+    <input type="text" id="message" placeholder="Andika meseji...">
+    <button onclick="sendMessage()">Tuma</button>
+    <button onclick="sendLocation()" style="background-color: #28a745;">Tuma GPS</button>
+    <br><br>
+    <button onclick="location.reload()" style="background-color: #dc3545;">Ondoka</button>
 </div>
 
 <script>
-    let db, user, activeKey, rec, chunks = [], isRec = false;
-
-    // DATABASE SETUP (INDEXEDDB - 1GB+ Capacity)
-    const request = indexedDB.open("JuniorPrivateV5", 1);
-    request.onupgradeneeded = e => {
-        db = e.target.result;
-        db.createObjectStore("rooms", { keyPath: "id" });
+    // 1. Firebase Configuration (Zile ulizopata punde hivi!)
+    const firebaseConfig = {
+        apiKey: "AIzaSyBY_Tgf5XhAfAR7sgE7SVPYSU1QjkWvh6Y",
+        authDomain: "privet-house--room.firebaseapp.com",
+        databaseURL: "https://privet-house--room-default-rtdb.firebaseio.com",
+        projectId: "privet-house--room",
+        storageBucket: "privet-house--room.firebasestorage.app",
+        messagingSenderId: "528726280084",
+        appId: "1:528726280084:web:96dc8caa7b1c082527f181",
+        measurementId: "G-870NBRCPDR"
     };
-    request.onsuccess = e => db = e.target.result;
 
-    function enterRoom() {
-        user = document.getElementById('loginName').value.trim();
-        activeKey = document.getElementById('loginPass').value.trim();
-        if(!user || !activeKey) return alert("Jaza taarifa zote!");
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-        const tx = db.transaction("rooms", "readonly");
-        tx.objectStore("rooms").get(activeKey).onsuccess = e => {
-            if(e.target.result) {
-                document.getElementById('gate').style.display = 'none';
-                document.getElementById('hub').style.display = 'block';
-                document.getElementById('roomTitle').innerText = "ROOM: " + e.target.result.name;
-                updateClock(); setInterval(updateClock, 1000);
-                render();
-            } else { alert("Chumba hiki hakipo!"); }
-        };
-    }
+    let currentRoom = "";
+    let user = "";
 
-    function createRoom() {
-        if(prompt("Ingiza Code ya Admin (1234):") === "1234") {
-            let n = prompt("Jina la Chumba (Mf: Tx):");
-            let p = prompt("Password ya Chumba:");
-            if(n && p) {
-                const tx = db.transaction("rooms", "readwrite");
-                tx.objectStore("rooms").add({ id: p, name: n, msgs: [] });
-                alert("Chumba Kimeundwa! Password ni: " + p);
+    // 2. Kuingia Chumbani
+    function joinRoom() {
+        user = document.getElementById("username").value;
+        currentRoom = document.getElementById("room-pass").value;
+
+        if (user === "" || currentRoom === "") {
+            alert("Tafadhali jaza jina na password!");
+            return;
+        }
+
+        document.getElementById("login-screen").style.display = "none";
+        document.getElementById("chat-screen").style.display = "block";
+        document.getElementById("room-title").innerText = "Chumba: " + currentRoom;
+
+        // Pakua meseji za chumba hiki pekee
+        database.ref("rooms/" + currentRoom).on("child_added", (snapshot) => {
+            const data = snapshot.val();
+            const chatBox = document.getElementById("chat-box");
+            const div = document.createElement("div");
+            div.classList.add("msg");
+            
+            // Angalia kama ni meseji ya kawaida au GPS
+            if (data.msg.includes("maps.google.com")) {
+                div.innerHTML = `<b>${data.user}:</b> <a href="${data.msg}" target="_blank">Fungua Ramani (GPS)</a>`;
+            } else {
+                div.innerHTML = `<b>${data.user}:</b> ${data.msg}`;
             }
+            
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    }
+
+    // 3. Tuma Meseji
+    function sendMessage() {
+        const msg = document.getElementById("message").value;
+        if (msg !== "") {
+            database.ref("rooms/" + currentRoom).push({
+                user: user,
+                msg: msg
+            });
+            document.getElementById("message").value = "";
         }
     }
 
-    function render() {
-        const tx = db.transaction("rooms", "readonly");
-        tx.objectStore("rooms").get(activeKey).onsuccess = e => {
-            const data = e.target.result;
-            const div = document.getElementById('chatDisplay');
-            div.innerHTML = data.msgs.map((m, i) => `
-                <div class="msg ${m.u === user ? 'me' : 'them'}">
-                    <span style="font-size:0.55rem; opacity:0.6;">${m.u}</span><br>
-                    ${m.t}
-                    <div style="font-size:0.5rem; display:flex; justify-content:space-between; margin-top:5px; border-top:1px solid rgba(0,0,0,0.1); padding-top:3px;">
-                        <span>${m.tm}</span>
-                        ${m.u === user ? `<span class="del-btn" onclick="delMsg(${i})">DEL</span>` : ''}
-                    </div>
-                </div>`).join('');
-            div.scrollTop = div.scrollHeight;
-        };
-    }
-
-    function addMsg(content) {
-        const tx = db.transaction("rooms", "readwrite");
-        const store = tx.objectStore("rooms");
-        store.get(activeKey).onsuccess = e => {
-            const data = e.target.result;
-            data.msgs.push({ u: user, t: content, tm: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
-            store.put(data);
-            render();
-        };
-    }
-
-    function sendText() {
-        let v = document.getElementById('msgIn').value.trim();
-        if(v) { addMsg(v); document.getElementById('msgIn').value = ""; }
-    }
-
-    async function toggleMic() {
-        const btn = document.getElementById('micBtn');
-        if(!isRec) {
-            try {
-                let s = await navigator.mediaDevices.getUserMedia({ audio: true });
-                rec = new MediaRecorder(s);
-                rec.ondataavailable = e => chunks.push(e.data);
-                rec.onstop = () => {
-                    let reader = new FileReader();
-                    reader.onload = e => addMsg(`<audio controls src="${e.target.result}"></audio>`);
-                    reader.readAsDataURL(new Blob(chunks, { type: 'audio/webm' }));
-                    chunks = [];
-                };
-                rec.start(); isRec = true;
-                btn.classList.add('recording'); btn.innerText = "STOP ⏹️";
-            } catch(e) { alert("Ruhusu Mic kwanza!"); }
+    // 4. Tuma GPS (Imerekebishwa!)
+    function sendLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((p) => {
+                // Link imerekebishwa kutumia ${} na kuondoa namba 0 isiyo na kazi
+                let link = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
+                database.ref("rooms/" + currentRoom).push({
+                    user: user,
+                    msg: link
+                });
+            }, () => {
+                alert("GPS imekataliwa!");
+            });
         } else {
-            rec.stop(); isRec = false;
-            btn.classList.remove('recording'); btn.innerText = "SOUND 🎤";
+            alert("Simu yako haikubali GPS");
         }
-    }
-
-    function uploadImg(el) {
-        if(!el.files[0]) return;
-        let r = new FileReader();
-        r.onload = e => addMsg(`<img src="${e.target.result}">`);
-        r.readAsDataURL(el.files[0]);
-    }
-
-    function delMsg(i) {
-        if(confirm("Futa ujumbe huu?")) {
-            const tx = db.transaction("rooms", "readwrite");
-            const store = tx.objectStore("rooms");
-            store.get(activeKey).onsuccess = e => {
-                const data = e.target.result;
-                data.msgs.splice(i, 1);
-                store.put(data);
-                render();
-            };
-        }
-    }
-
-    function clearAll() {
-        if(confirm("Je, unataka kufuta CHAT ZOTE kwenye chumba hiki?")) {
-            const tx = db.transaction("rooms", "readwrite");
-            const store = tx.objectStore("rooms");
-            store.get(activeKey).onsuccess = e => {
-                const data = e.target.result;
-                data.msgs = [];
-                store.put(data);
-                render();
-            };
-        }
-    }
-
-    function sendGPS() {
-        navigator.geolocation.getCurrentPosition(p => {
-            let link = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
-            addMsg(`📍 <a href="${link}" target="_blank" style="color:blue;">Eneo langu la sasa</a>`);
-        }, () => alert("Washa GPS!"));
-    }
-
-    function updateClock() {
-        document.getElementById('sessionTime').innerText = new Date().toLocaleString();
     }
 </script>
+
 </body>
 </html>
