@@ -3,63 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JUNIOR PRIVATE HUB - MASTER</title>
+    <title>JUNIOR PRIVATE HUB - CAMPUS EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-classic.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-classic.js"></script>
 
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #e5ddd5; margin: 0; height: 100vh; display: flex; flex-direction: column; }
-        #login-screen { flex: 1; display: flex; align-items: center; justify-content: center; background: white; }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 85%; max-width: 400px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; background: #075e54; color: white; font-size: 16px; }
-
-        #chat-screen { display: none; flex-direction: column; height: 100vh; }
-        .header { background: #075e54; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        #chat-box { flex: 1; overflow-y: auto; padding: 15px; background: #efe7dd; display: flex; flex-direction: column; gap: 10px; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .login-card { background: white; padding: 35px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); width: 90%; max-width: 400px; text-align: center; }
+        h2 { color: #075e54; margin-bottom: 5px; }
+        input { width: 100%; padding: 12px; margin: 12px 0; border: 1px solid #ccc; border-radius: 10px; font-size: 16px; outline: none; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; background: #075e54; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; }
         
-        .msg { padding: 10px; border-radius: 12px; max-width: 80%; position: relative; font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; }
-        .my-msg { background: #dcf8c6; align-self: flex-end; }
-        .other-msg { background: #fff; align-self: flex-start; }
-        .del-btn { color: red; font-size: 12px; cursor: pointer; float: right; margin-left: 10px; font-weight: bold; }
-        
-        .input-bar { background: #f0f0f0; padding: 10px; display: flex; align-items: center; gap: 8px; }
-        #msg-input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ddd; outline: none; }
-        .icon { cursor: pointer; font-size: 22px; }
-        img { max-width: 100%; border-radius: 10px; margin-top: 5px; }
+        /* Screen ya Chat ikiwa tayari */
+        #chat-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; flex-direction: column; background: #e5ddd5; }
+        .chat-header { background: #075e54; color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        #chat-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px 15px; border-radius: 15px; max-width: 80%; font-size: 15px; line-height: 1.4; position: relative; }
+        .my-msg { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .other-msg { background: white; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .input-area { background: #f0f0f0; padding: 10px; display: flex; gap: 10px; align-items: center; }
+        #msg-in { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ddd; outline: none; }
     </style>
 </head>
 <body>
 
-<div id="login-screen">
-    <div class="card">
-        <h2 style="color: #075e54;">Junior Private Hub</h2>
-        <p style="font-size: 13px; color: #666;">Ingiza Jina na Password ya Chumba</p>
-        <input type="text" id="username" placeholder="Jina lako">
-        <input type="password" id="room-pass" placeholder="Password ya Chumba">
-        <button onclick="joinRoom()">INGIA CHUMBANI</button>
-        <p style="font-size: 10px; color: red; margin-top: 15px;">*Chumba kisipotumika siku 30 kitafutika*</p>
-    </div>
+<div id="login-ui" class="login-card">
+    <h2>Junior Private Hub</h2>
+    <p style="font-size: 13px; color: #666;">Salama, Siri, na Haraka kwa Wanafunzi</p>
+    <input type="text" id="user-name" placeholder="Jina lako (Mfano: Junior)">
+    <input type="password" id="room-pass" placeholder="Password ya Chumba">
+    <button onclick="enterTheHub()">ENTER THE ROOM</button>
+    <p style="font-size: 11px; color: #d32f2f; margin-top: 15px;">*Chumba na kila kilichomo kitafutika baada ya siku 30*</p>
 </div>
 
 <div id="chat-screen">
-    <div class="header">
-        <span id="room-display">Chumba</span>
-        <button onclick="clearChat()" style="width: auto; background: #dc3545; font-size: 11px; padding: 5px 10px;">Futa Chat Zote</button>
+    <div class="chat-header">
+        <span id="room-title">Chumba: Private</span>
+        <button onclick="location.reload()" style="background:none; border:1px solid white; color:white; border-radius:5px; padding:2px 8px; font-size:11px;">EXIT</button>
     </div>
-    
     <div id="chat-box"></div>
-
-    <div class="input-bar">
-        <label class="icon">📷<input type="file" id="file-in" accept="image/*" style="display:none" onchange="sendImg(this)"></label>
-        <input type="text" id="msg-input" placeholder="Andika meseji...">
-        <button onclick="sendTxt()" style="width: auto; padding: 8px 15px; background: #075e54; color: white; border-radius: 20px; border: none;">➤</button>
-        <button id="v-btn" onmousedown="startV()" onmouseup="stopV()" ontouchstart="startV()" ontouchend="stopV()" style="width: auto; background: #25d366; border: none; border-radius: 50%; padding: 10px;">🎤</button>
+    <div class="input-area">
+        <label style="font-size:22px; cursor:pointer;">📷<input type="file" style="display:none" onchange="sendPhoto(this)"></label>
+        <input type="text" id="msg-in" placeholder="Andika kitu...">
+        <button onclick="sendTxt()" style="width:auto; border-radius:50%; padding:10px 14px;">➤</button>
     </div>
 </div>
 
 <script>
-    // FIREBASE CONFIG YAKO
+    // Config yako ya Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyBY_Tgf5XhAfAR7sgE7SVPYSU1QjkWvh6Y",
         authDomain: "privet-house--room.firebaseapp.com",
@@ -72,96 +63,66 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let user, room, recorder, chunks = [];
+    let currentUser, currentRoom;
 
-    function joinRoom() {
-        user = document.getElementById("username").value.trim();
-        room = document.getElementById("room-pass").value.trim();
-        if(!user || !room) return alert("Tafadhali jaza Jina na Password!");
+    function enterTheHub() {
+        currentUser = document.getElementById("user-name").value.trim();
+        currentRoom = document.getElementById("room-pass").value.trim();
 
-        // Sasisha muda wa mwisho wa chumba (kwa ajili ya auto-delete ya siku 30)
-        db.ref("room_metadata/" + room).set({ last_active: new Date().getTime() });
+        if(!currentUser || !currentRoom) return alert("Jaza jina na password kwanza!");
 
-        document.getElementById("login-screen").style.display = "none";
+        // Sajili chumba kama active kwa ajili ya auto-delete siku 30
+        db.ref("room_meta/" + currentRoom).set({ last_active: Date.now() });
+
+        document.getElementById("login-ui").style.display = "none";
         document.getElementById("chat-screen").style.display = "flex";
-        document.getElementById("room-display").innerText = "🔐 Hub: " + room;
+        document.getElementById("room-title").innerText = "🔐 " + currentRoom;
 
-        // Anza kusikiliza meseji Live
-        db.ref("rooms/" + room).on("value", (snap) => {
+        // Anza kusikiliza meseji za chumba husika pekee
+        db.ref("rooms/" + currentRoom).on("value", (snap) => {
             const box = document.getElementById("chat-box");
             box.innerHTML = "";
             snap.forEach((child) => {
-                render(child.key, child.val());
+                const data = child.val();
+                const div = document.createElement("div");
+                div.className = `msg ${data.user === currentUser ? 'my-msg' : 'other-msg'}`;
+                
+                let contentHtml = `<small style="color:#075e54; font-weight:bold;">${data.user}</small><br>`;
+                if(data.type === "text") contentHtml += `<span>${data.content}</span>`;
+                if(data.type === "img") contentHtml += `<img src="${data.content}" style="width:100%; border-radius:10px;">`;
+                
+                div.innerHTML = contentHtml;
+                box.appendChild(div);
             });
             box.scrollTop = box.scrollHeight;
         });
     }
 
-    function render(id, data) {
-        const box = document.getElementById("chat-box");
-        const div = document.createElement("div");
-        div.className = `msg ${data.user === user ? 'my-msg' : 'other-msg'}`;
-        
-        let html = `<span class="del-btn" onclick="deleteMsg('${id}')">x</span>`;
-        html += `<small style="font-weight:bold; color:#075e54; display:block;">${data.user}</small>`;
-
-        if(data.type === "text") html += `<span>${data.content}</span>`;
-        if(data.type === "img") html += `<img src="${data.content}" onclick="window.open(this.src)">`;
-        if(data.type === "aud") html += `<audio controls src="${data.content}" style="width:100%"></audio>`;
-
-        div.innerHTML = html;
-        box.appendChild(div);
-    }
-
     function sendTxt() {
-        const inp = document.getElementById("msg-input");
-        if(inp.value.trim()) {
-            db.ref("rooms/" + room).push({ user: user, content: inp.value, type: "text" });
-            db.ref("room_metadata/" + room).update({ last_active: new Date().getTime() });
-            inp.value = "";
+        const input = document.getElementById("msg-in");
+        if(input.value.trim()) {
+            db.ref("rooms/" + currentRoom).push({
+                user: currentUser,
+                content: input.value,
+                type: "text"
+            });
+            db.ref("room_meta/" + currentRoom).update({ last_active: Date.now() });
+            input.value = "";
         }
     }
 
-    function sendImg(input) {
+    function sendPhoto(input) {
         const file = input.files[0];
-        if(!file) return;
         const reader = new FileReader();
         reader.onload = (e) => {
-            db.ref("rooms/" + room).push({ user: user, content: e.target.result, type: "img" });
+            db.ref("rooms/" + currentRoom).push({
+                user: currentUser,
+                content: e.target.result,
+                type: "img"
+            });
+            db.ref("room_meta/" + currentRoom).update({ last_active: Date.now() });
         };
         reader.readAsDataURL(file);
-    }
-
-    function startV() {
-        navigator.mediaDevices.getUserMedia({ audio: true }).then(s => {
-            recorder = new MediaRecorder(s);
-            recorder.start();
-            chunks = [];
-            recorder.ondataavailable = e => chunks.push(e.data);
-            document.getElementById("v-btn").style.background = "red";
-        });
-    }
-
-    function stopV() {
-        if(!recorder) return;
-        recorder.stop();
-        document.getElementById("v-btn").style.background = "#25d366";
-        recorder.onstop = () => {
-            const blob = new Blob(chunks, { type: "audio/webm" });
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                db.ref("rooms/" + room).push({ user: user, content: e.target.result, type: "aud" });
-            };
-            reader.readAsDataURL(blob);
-        };
-    }
-
-    function deleteMsg(id) {
-        if(confirm("Futa meseji?")) db.ref("rooms/" + room + "/" + id).remove();
-    }
-
-    function clearChat() {
-        if(confirm("Futa chat zote chumbani?")) db.ref("rooms/" + room).remove();
     }
 </script>
 </body>
