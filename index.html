@@ -6,196 +6,51 @@
     <title>JUNIOR PRIVATE HUB | SECURE SESSION</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-classic.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-classic.js"></script>
-
     <style>
-        :root { 
-            --neon-green: #00ff41; 
-            --bg-dark: #0a0a0a; 
-            --panel: #161b22; 
-            --text-gray: #8b949e;
-        }
-
-        body { 
-            font-family: 'Courier New', monospace; 
-            background: var(--bg-dark); 
-            color: var(--neon-green); 
-            margin: 0; 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden;
-        }
-
-        /* SCREEN YA LOGIN (THE GATE) */
-        #login-screen { 
-            position: fixed; 
-            inset: 0; 
-            background: radial-gradient(circle, #1a1f26 0%, #0a0a0a 100%); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            z-index: 1000; 
-        }
-
-        .secure-gate { 
-            border: 1px solid var(--neon-green); 
-            padding: 40px; 
-            border-radius: 5px; 
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2); 
-            text-align: center; 
-            width: 90%; 
-            max-width: 400px; 
-        }
-
-        .status-box { font-size: 10px; margin-bottom: 20px; letter-spacing: 2px; }
+        :root { --neon-green: #00ff41; --bg-dark: #0a0a0a; --panel: #161b22; --text-gray: #8b949e; }
+        body { font-family: 'Courier New', monospace; background: var(--bg-dark); color: var(--neon-green); margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        #login-screen { position: fixed; inset: 0; background: radial-gradient(circle, #1a1f26 0%, #0a0a0a 100%); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .secure-gate { border: 1px solid var(--neon-green); padding: 40px; border-radius: 5px; box-shadow: 0 0 20px rgba(0, 255, 65, 0.2); text-align: center; width: 90%; max-width: 400px; }
         .blink { animation: blinker 1s linear infinite; color: red; }
         @keyframes blinker { 50% { opacity: 0; } }
-
-        input { 
-            width: 100%; 
-            background: #000; 
-            border: 1px solid #333; 
-            padding: 15px; 
-            margin: 10px 0; 
-            color: var(--neon-green); 
-            outline: none; 
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-
-        .enter-btn { 
-            width: 100%; 
-            padding: 15px; 
-            background: var(--neon-green); 
-            color: black; 
-            border: none; 
-            font-weight: bold; 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            margin-top: 10px;
-        }
-
-        /* INTERFACE YA NDANI (THE HUB) */
+        input { width: 100%; background: #000; border: 1px solid #333; padding: 15px; margin: 10px 0; color: var(--neon-green); outline: none; box-sizing: border-box; font-size: 16px; }
+        .enter-btn { width: 100%; padding: 15px; background: var(--neon-green); color: black; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         #hub-interface { display: none; flex-direction: column; height: 100vh; }
-        
-        .top-nav { 
-            background: var(--panel); 
-            padding: 15px; 
-            border-bottom: 1px solid var(--neon-green); 
-            display: flex; 
-            justify-content: space-between; 
-            font-size: 11px; 
-        }
-
-        #chat-flow { 
-            flex: 1; 
-            overflow-y: auto; 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-            background-image: linear-gradient(rgba(0, 255, 65, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 65, 0.02) 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-
-        .bubble { 
-            padding: 12px; 
-            border: 1px solid #30363d; 
-            border-radius: 4px; 
-            max-width: 80%; 
-            word-wrap: break-word;
-            position: relative;
-        }
-
+        .top-nav { background: var(--panel); padding: 15px; border-bottom: 1px solid var(--neon-green); display: flex; justify-content: space-between; font-size: 11px; }
+        #chat-flow { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background-image: linear-gradient(rgba(0, 255, 65, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 65, 0.02) 1px, transparent 1px); background-size: 20px 20px; }
+        .bubble { padding: 12px; border: 1px solid #30363d; border-radius: 4px; max-width: 80%; word-wrap: break-word; }
         .my-side { align-self: flex-end; border-color: var(--neon-green); background: rgba(0, 255, 65, 0.05); }
         .other-side { align-self: flex-start; background: #161b22; }
-
-        .user-tag { font-size: 10px; color: var(--text-gray); margin-bottom: 5px; display: block; }
-
-        /* MEDIA STYLING */
-        .media-box img, .media-box video { 
-            max-width: 100%; 
-            border-radius: 4px; 
-            margin-top: 8px; 
-            border: 1px solid #444; 
-        }
-        .doc-link { 
-            display: inline-block; 
-            margin-top: 10px; 
-            color: var(--neon-green); 
-            text-decoration: none; 
-            border: 1px dashed var(--neon-green); 
-            padding: 5px 10px;
-        }
-
-        /* CONTROLS */
-        .control-bar { 
-            background: var(--panel); 
-            padding: 15px; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            border-top: 1px solid #333; 
-        }
-
-        #msg-field { 
-            flex: 1; 
-            background: #000; 
-            border: 1px solid #444; 
-            padding: 12px; 
-            color: white; 
-            border-radius: 20px; 
-            outline: none; 
-        }
-
-        .icon-btn { cursor: pointer; font-size: 22px; filter: grayscale(1); transition: 0.2s; }
-        .icon-btn:hover { filter: grayscale(0); }
-        
-        #mic-btn { 
-            background: #ff3e3e; 
-            border: none; 
-            border-radius: 50%; 
-            width: 45px; 
-            height: 45px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer;
-            color: white;
-        }
+        .media-box img, .media-box video { max-width: 100%; border-radius: 4px; margin-top: 8px; border: 1px solid #444; }
+        .control-bar { background: var(--panel); padding: 15px; display: flex; align-items: center; gap: 12px; border-top: 1px solid #333; }
+        #msg-field { flex: 1; background: #000; border: 1px solid #444; padding: 12px; color: white; border-radius: 20px; outline: none; }
+        #mic-btn { background: #ff3e3e; border: none; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; color: white; }
     </style>
 </head>
 <body>
-
 <div id="login-screen">
     <div class="secure-gate">
-        <div class="status-box"><span class="blink">●</span> ENCRYPTION_ACTIVE</div>
+        <div style="font-size: 10px;"><span class="blink">●</span> ENCRYPTION_ACTIVE</div>
         <h3>PRIVATE_HUB_V4</h3>
         <input type="text" id="alias" placeholder="IDENTITY (JINA)">
         <input type="password" id="secret-key" placeholder="ROOM_PASSWORD">
         <button class="enter-btn" onclick="initializeHub()">INITIALIZE ACCESS</button>
-        <p style="font-size: 9px; color: var(--text-gray); margin-top: 20px;">MILITARY GRADE DATA PROTECTION</p>
     </div>
 </div>
-
 <div id="hub-interface">
     <div class="top-nav">
-        <span><span style="color:var(--text-gray)">SECURE_ID:</span> <b id="session-tag"></b></span>
-        <span style="color:#ff3e3e; cursor:pointer;" onclick="location.reload()">[TERMINATE_SESSION]</span>
+        <span>SESSION: <b id="session-tag"></b></span>
+        <span style="color:#ff3e3e; cursor:pointer;" onclick="location.reload()">[LOGOUT]</span>
     </div>
-    
     <div id="chat-flow"></div>
-
     <div class="control-bar">
-        <label class="icon-btn" title="Picha/Video/Doc">📎<input type="file" id="file-trigger" style="display:none" onchange="processFile(this)"></label>
-        <input type="text" id="msg-field" placeholder="Andika meseji ya siri...">
+        <label style="cursor:pointer; font-size:22px;">📎<input type="file" id="file-trigger" style="display:none" onchange="processFile(this)"></label>
+        <input type="text" id="msg-field" placeholder="Secret message...">
         <button onclick="pushTxt()" style="background:var(--neon-green); border:none; color:black; font-weight:bold; padding:10px 15px; border-radius:5px; cursor:pointer;">SEND</button>
-        <button id="mic-btn" onmousedown="recStart()" onmouseup="recStop()" ontouchstart="recStart()" ontouchend="recStop()">🎤</button>
+        <button id="mic-btn" onmousedown="recStart()" onmouseup="recStop()">🎤</button>
     </div>
 </div>
-
 <script>
-    // FIREBASE CONFIGURATION (Kutoka kwako - imekaguliwa)
     const firebaseConfig = {
         apiKey: "AIzaSyBY_Tgf5XhAfAR7sgE7SVPYSU1QjkWvh6Y",
         authDomain: "privet-house--room.firebaseapp.com",
@@ -205,108 +60,74 @@
         messagingSenderId: "528726280084",
         appId: "1:528726280084:web:96dc8caa7b1c082527f181"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     let alias, roomKey, recorder, audioChunks = [];
 
-    // Kuingia Ndani
     function initializeHub() {
         alias = document.getElementById("alias").value.trim();
         roomKey = document.getElementById("secret-key").value.trim();
-        
-        if(!alias || !roomKey) return alert("ACCESS DENIED: Credentials Invalid");
-
+        if(!alias || !roomKey) return alert("Credentials Required");
         document.getElementById("login-screen").style.display = "none";
         document.getElementById("hub-interface").style.display = "flex";
         document.getElementById("session-tag").innerText = roomKey;
-
-        // Pakia chat live
         db.ref("rooms/" + roomKey).on("value", (snap) => {
             const flow = document.getElementById("chat-flow");
             flow.innerHTML = "";
-            snap.forEach((child) => {
-                drawMsg(child.val());
-            });
+            snap.forEach((child) => { drawMsg(child.val()); });
             flow.scrollTop = flow.scrollHeight;
         });
     }
 
-    // Kuchora meseji kwenye kioo
     function drawMsg(data) {
         const flow = document.getElementById("chat-flow");
         const div = document.createElement("div");
         div.className = `bubble ${data.user === alias ? 'my-side' : 'other-side'}`;
-        
-        let html = `<span class="user-tag">${data.user}</span>`;
+        let html = `<b style="font-size:10px;">${data.user}</b><br>`;
         if(data.type === "text") html += `<span>${data.content}</span>`;
         if(data.type === "img") html += `<div class="media-box"><img src="${data.content}"></div>`;
         if(data.type === "vid") html += `<div class="media-box"><video controls src="${data.content}"></video></div>`;
-        if(data.type === "aud") html += `<audio controls src="${data.content}" style="width:100%; margin-top:5px;"></audio>`;
-        if(data.type === "doc") html += `<a class="doc-link" href="${data.content}" download="secret_file">📄 Secret_Document.zip</a>`;
-
+        if(data.type === "aud") html += `<audio controls src="${data.content}" style="width:100%"></audio>`;
+        if(data.type === "doc") html += `<a href="${data.content}" download style="color:var(--neon-green)">📄 Secret Doc</a>`;
         div.innerHTML = html;
         flow.appendChild(div);
     }
 
-    // Kutuma Maandishi
     function pushTxt() {
         const input = document.getElementById("msg-field");
         if(input.value.trim()) {
-            db.ref("rooms/" + roomKey).push({ 
-                user: alias, 
-                content: input.value, 
-                type: "text" 
-            });
+            db.ref("rooms/" + roomKey).push({ user: alias, content: input.value, type: "text" });
             input.value = "";
         }
     }
 
-    // Kutuma Faili (Picha, Video, Documents)
     function processFile(input) {
- 
         const file = input.files[0];
-        if(!file) return;
-        
         const reader = new FileReader();
         reader.onload = (e) => {
-            let fileType = "doc";
-            if(file.type.startsWith("image")) fileType = "img";
-            if(file.type.startsWith("video")) fileType = "vid";
-            
-            db.ref("rooms/" + roomKey).push({ 
-                user: alias, 
-                content: e.target.result, 
-                type: fileType 
-            });
+            let type = file.type.startsWith("image") ? "img" : file.type.startsWith("video") ? "vid" : "doc";
+            db.ref("rooms/" + roomKey).push({ user: alias, content: e.target.result, type: type });
         };
         reader.readAsDataURL(file);
     }
 
-    // Voice Recording (Marekbisho yamefanyika hapa)
     function recStart() {
         navigator.mediaDevices.getUserMedia({ audio: true }).then(s => {
             recorder = new MediaRecorder(s);
             recorder.start();
             audioChunks = [];
             recorder.ondataavailable = e => audioChunks.push(e.data);
-            document.getElementById("mic-btn").style.transform = "scale(1.2)";
-        }).catch(err => alert("Ruhusu Mic kwanza!"));
+        });
     }
 
     function recStop() {
         if(!recorder) return;
         recorder.stop();
-        document.getElementById("mic-btn").style.transform = "scale(1)";
         recorder.onstop = () => {
             const blob = new Blob(audioChunks, { type: "audio/webm" });
             const reader = new FileReader();
             reader.onload = (e) => {
-                db.ref("rooms/" + roomKey).push({ 
-                    user: alias, 
-                    content: e.target.result, 
-                    type: "aud" 
-                });
+                db.ref("rooms/" + roomKey).push({ user: alias, content: e.target.result, type: "aud" });
             };
             reader.readAsDataURL(blob);
         };
